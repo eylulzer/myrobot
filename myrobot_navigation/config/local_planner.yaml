@@ -1,0 +1,34 @@
+DWAPlannerROS:
+  # Robot configuration parameters
+  acc_lim_x: 0.25
+  acc_lim_y: 0
+  acc_lim_th: 0.75
+
+  max_vel_x: 1.0
+  min_vel_x: -1.0
+  max_vel_y: 0
+  min_vel_y: 0
+
+  max_trans_vel: 0.5
+  min_trans_vel: -0.5
+  max_rot_vel: 1.0
+  min_rot_vel: -1.0
+
+  # Goal Tolerance Parameters
+  yaw_goal_tolerance: 0.2
+  xy_goal_tolerance: 0.05
+  latch_xy_goal_tolerance: false
+
+  # optimization
+  sim_time: 2.0             #The amount of time to forward-simulate trajectories in seconds
+  vx_samples: 3             #The number of samples to use when exploring the x velocity space
+  vth_samples: 20           #The number of samples to use when exploring the theta velocity space
+  sim_granularity: 0.02     #The step size, in meters, to take between points on a given trajectory
+  path_distance_bias: 24.0  #The weighting for how much the controller should stay close to the path it was given
+  goal_distance_bias: 32.0  #The weighting for how much the controller should attempt to reach its local goal, also controls speed
+  occdist_scale: 0.10       #The weighting for how much the controller should attempt to avoid obstacles
+  oscillation_reset_dist: 0.1 #How far the robot must travel in meters before oscillation flags are reset
+  controller_frequency: 20.0  #hz
+  prefer_forward_cost_function: 10.0
+
+  global_frame_id: odom

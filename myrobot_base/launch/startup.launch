@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+<!--Load Hardware Interface-->
+    <rosparam file="$(find myrobot_base)/config/control.yaml" command="load" ns="/"/>
+    <node name="myrobot_base" pkg="myrobot_base" type="myrobot_hardware_interface" ns="/"
+        respawn="false" output="screen" args="mobile_base_controller joint_state_controller"/>
+    
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/" args="joint_state_controller mobile_base_controller" required="true"/>
+
+</launch>
+
+
+
