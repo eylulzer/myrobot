@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /Grid1
         - /RobotModel1
+        - /RobotModel1/Status1
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -86,6 +87,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        float_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        laser_scanner:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         left_wheel:
           Alpha: 1
           Show Axes: false
@@ -117,6 +128,8 @@ Visualization Manager:
           Value: true
         caster_wheel:
           Value: true
+        laser_scanner:
+          Value: true
         left_wheel:
           Value: true
         right_wheel:
@@ -134,6 +147,8 @@ Visualization Manager:
             caster_fixed:
               caster_wheel:
                 {}
+          laser_scanner:
+            {}
           left_wheel:
             {}
           right_wheel:
@@ -144,7 +159,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_footprint
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -165,25 +180,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.51276278
+      Distance: 8.24371338
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -2.37968922
+        Y: -1.48801601
+        Z: -0.00787353516
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: -1.3897959
+      Pitch: 0.334796607
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.78040695
+      Yaw: 0.329999924
     Saved: ~
 Window Geometry:
   Displays:
