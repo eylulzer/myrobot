@@ -73,4 +73,7 @@
     <xacro:include filename="$(find myrobot_description)/urdf/laser_scanner.urdf.xacro"/>
     <xacro:laser_scanner/>
 
+    <xacro:include filename="$(find myrobot_description)/urdf/camera.urdf.xacro"/>
+    <xacro:camera_link/>
+
 </robot>
