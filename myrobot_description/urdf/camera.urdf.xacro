@@ -24,7 +24,7 @@
         <joint name="camera_joint" type="fixed">
             <parent link="base_link"/>
             <child link="camera_link"/>
-            <origin rpy="0.0 0.0 0.0" xyz="0 0 ${base_height/2 + camera_height/2}"/>
+            <origin rpy="0.0 0.0 0.0" xyz="0.45 0 ${base_height/2 + camera_height/2}"/>
 
         </joint>
 
