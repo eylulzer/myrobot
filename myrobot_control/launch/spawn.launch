@@ -25,7 +25,10 @@
     <!--Gazebo Simulator-->
     <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
           args="-urdf -param robot_description -model myrobot -verbose" output="screen"/>
+
+    <!-- Custom Diff Drive Controller -->
     <rosparam file="$(find myrobot_control)/config/control.yaml" command="load" ns="/"/>
     <node name="myrobot_control" pkg="controller_manager" type="spawner" ns="/"
-        respawn="false" output="screen" args="mobile_base_controller joint_state_controller"/>
+        respawn="false" output="screen" args="mobile_base_controller"/>
+
 </launch>

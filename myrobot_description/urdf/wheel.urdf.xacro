@@ -1,42 +1,42 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="wheel">
 
- <xacro:property name="wheel_radius" value="0.2"/>
- <xacro:property name="wheel_length" value="0.04"/>
- <xacro:macro name="wheel" params="prefix reflect">
- 
+    <xacro:property name="wheel_radius" value="0.2"/>
+    <xacro:property name="wheel_length" value="0.08"/>
+    <xacro:macro name="wheel" params="prefix reflect">
+
         <link name="${prefix}_wheel">
-            <xacro:cylinder_inertia m="1" r="${wheel_radius}" h="${wheel_length}"/>
             <visual>
                 <origin xyz="0 0 0" rpy="1.57 0 0"/>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
                 </geometry>
-                </visual>
+            </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="1.57 0 0"/>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
                 </geometry>
             </collision>
+            <xacro:cylinder_inertia m="1" r="${wheel_radius}" h="${wheel_length}"/>
         </link>
 
-    <joint name="${prefix}_wheel_joint" type="continuous">
-        <axis xyz="0 1 0" rpy="0 0 0"/>
-        <parent link="base_link"/>
-        <child link="${prefix}_wheel"/>
-        <origin xyz="0.3 ${(base_width/2 + wheel_length/2) * reflect} ${wheel_radius - base_distance_from_ground - (base_height/2)}" rpy="0 0 0"/>
-    </joint>
-
-        <transmission name="simple_${prefix}_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="${prefix}_wheel_joint">
-            <hardwareInterface>VelocityJointInterface</hardwareInterface>
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <axis xyz="0 1 0" rpy="0 0 0"/>
+            <parent link="base_link"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="0.3 ${(base_width/2 + wheel_length/2) * reflect} ${wheel_radius - base_distance_from_ground - (base_height/2)}"
+                    rpy="0 0 0"/>
         </joint>
-        <actuator name="${prefix}_motor">
-            <mechanicalReduction>50</mechanicalReduction>
-            <hardwareInterface>VelocityJointInterface</hardwareInterface>
-        </actuator>
+
+        <transmission name="simple_${prefix}_trans" type="SimpleTransmission">
+            <type>transmission_interface/SimpleTransmission</type>
+            <actuator name="${prefix}_motor">
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+            <joint name="${prefix}_wheel_joint">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            </joint>
         </transmission>
 
     </xacro:macro>
