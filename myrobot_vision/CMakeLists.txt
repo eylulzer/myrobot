@@ -27,6 +27,9 @@ add_executable(cv_blend src/cv_blend.cpp)
 add_executable(cv_brightness src/cv_brightness.cpp)
 add_executable(cv_contrast src/cv_contrast.cpp)
 add_executable(cv_drawatom src/cv_drawatom.cpp)
+add_executable(cv_crop src/cv_crop.cpp)
+add_executable(cv_lookuptable src/cv_lookuptable.cpp)
+add_executable(cv_text src/cv_text.cpp)
 
 
 target_link_libraries(
@@ -34,7 +37,6 @@ target_link_libraries(
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
-
 
 target_link_libraries(
     cv_bw
@@ -68,6 +70,24 @@ target_link_libraries(
 
 target_link_libraries(
     cv_drawatom
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_crop
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_lookuptable
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_text
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )

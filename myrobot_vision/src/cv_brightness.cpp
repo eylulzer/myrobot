@@ -46,15 +46,18 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     //do operation over image
     cv::Mat new_image = cv::Mat::zeros(cvImagePtr->image.size(), cvImagePtr->image.type());
 
-    /// Do the operation new_image(i,j) = alpha*image(i,j) + beta
-    for (int y = 0; y < cvImagePtr->image.rows; y++) {
-        for (int x = 0; x < cvImagePtr->image.cols; x++) {
-            for (int c = 0; c < 3; c++) {
-                new_image.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>(
-                        (cvImagePtr->image.at<cv::Vec3b>(y, x)[c]) + brightness);
-            }
-        }
-    }
+//    /// Do the operation new_image(i,j) = alpha*image(i,j) + beta
+//    for (int y = 0; y < cvImagePtr->image.rows; y++) {
+//        for (int x = 0; x < cvImagePtr->image.cols; x++) {
+//            for (int c = 0; c < 3; c++) {
+//                new_image.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>(
+//                        (cvImagePtr->image.at<cv::Vec3b>(y, x)[c]) + brightness);
+//            }
+//        }
+//    }
+
+    // Alternative of passing through all pixels
+    cvImagePtr->image.convertTo(new_image, -1, 1.0, brightness);
 
     //Update GUI
     cv::imshow(OPENCV_WINDOW, new_image);
