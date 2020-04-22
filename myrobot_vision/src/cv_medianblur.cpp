@@ -1,23 +1,21 @@
 //
-// Created by ros on 20.04.2020.
+// Created by ros on 21.04.2020.
 //
 
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
-#include <opencv2/imgproc/imgproc.hpp>
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include <opencv2/highgui/highgui.hpp>
 
 void imageCallback(const sensor_msgs::ImageConstPtr &msg);
 
 static const std::string OPENCV_WINDOW = "Img Window";
 
-int height;
-int width;
-
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "opencv_crop");
+    ros::init(argc, argv, "opencv_medianblur");
     ros::NodeHandle nodeHandle;
 
     image_transport::ImageTransport imageTransport(nodeHandle);
@@ -42,16 +40,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     }
 
     //do operation over image
-    height = cvImagePtr->image.size().height;
-    width = cvImagePtr->image.size().width;
-
-    cv::Point origin(0, 0);
-    cv::Point size(width - 400 , height - 400);
-    cv::Rect r(origin, size);
-    cv::Mat smallImg = cvImagePtr->image(r);
-
+    cv::Mat dst;
+    for ( int i = 1; i < 31; i = i + 2 )
+    {
+        medianBlur (cvImagePtr->image, dst, i);
+    }
 
     //Update GUI
-    cv::imshow(OPENCV_WINDOW, smallImg);
+    cv::imshow(OPENCV_WINDOW, dst);
     cv::waitKey(3);
 }

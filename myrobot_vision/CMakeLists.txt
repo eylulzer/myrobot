@@ -30,6 +30,12 @@ add_executable(cv_drawatom src/cv_drawatom.cpp)
 add_executable(cv_crop src/cv_crop.cpp)
 add_executable(cv_lookuptable src/cv_lookuptable.cpp)
 add_executable(cv_text src/cv_text.cpp)
+add_executable(cv_blur src/cv_blur.cpp)
+add_executable(cv_gaussianblur src/cv_gaussianblur.cpp)
+add_executable(cv_medianblur src/cv_medianblur.cpp)
+add_executable(cv_bilateralblur src/cv_bilateralblur.cpp)
+add_executable(cv_eroding src/cv_eroding.cpp)
+add_executable(cv_dilating src/cv_dilating.cpp)
 
 
 target_link_libraries(
@@ -88,6 +94,42 @@ target_link_libraries(
 
 target_link_libraries(
     cv_text
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_blur
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_gaussianblur
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_medianblur
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_bilateralblur
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_eroding
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_dilating
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
