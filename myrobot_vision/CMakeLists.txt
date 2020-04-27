@@ -36,6 +36,7 @@ add_executable(cv_medianblur src/cv_medianblur.cpp)
 add_executable(cv_bilateralblur src/cv_bilateralblur.cpp)
 add_executable(cv_eroding src/cv_eroding.cpp)
 add_executable(cv_dilating src/cv_dilating.cpp)
+add_executable(cv_homework5 src/cv_homework5.cpp)
 
 
 target_link_libraries(
@@ -130,6 +131,12 @@ target_link_libraries(
 
 target_link_libraries(
     cv_dilating
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_homework5
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
