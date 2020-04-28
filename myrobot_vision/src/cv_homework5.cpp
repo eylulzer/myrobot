@@ -5,11 +5,8 @@
 #include <ros/ros.h>
 #include <nav_msgs/GetMap.h>
 #include <vector>
-#include <fstream>
-#include <iostream>
 
 #include <sensor_msgs/image_encodings.h>
-#include <cv_bridge/cv_bridge.h>
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include <opencv2/highgui/highgui.hpp>
@@ -27,6 +24,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nodeHandle;
 
     cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow("original Map", CV_WINDOW_NORMAL);
 
     if (!requestMap(nodeHandle))
         exit(-1);
@@ -75,6 +73,9 @@ void readMap(const nav_msgs::OccupancyGrid &map) {
             currCell++;
         }
     }
+
+
+    imshow("original Map", matMap);
 
     float scale = 4.00;
     cv::Mat blur, canny_output;

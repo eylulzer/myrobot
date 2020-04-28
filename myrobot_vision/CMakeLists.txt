@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(myrobot_vision)
 
+set(std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS
     cv_bridge
     image_transport
     roscpp
     rospy
     sensor_msgs
+    geometry_msgs
     std_msgs
     )
 
@@ -37,6 +40,7 @@ add_executable(cv_bilateralblur src/cv_bilateralblur.cpp)
 add_executable(cv_eroding src/cv_eroding.cpp)
 add_executable(cv_dilating src/cv_dilating.cpp)
 add_executable(cv_homework5 src/cv_homework5.cpp)
+add_executable(cv_homework10 src/cv_homework10.cpp)
 
 
 target_link_libraries(
@@ -137,6 +141,12 @@ target_link_libraries(
 
 target_link_libraries(
     cv_homework5
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_homework10
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
