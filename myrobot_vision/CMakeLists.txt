@@ -41,7 +41,11 @@ add_executable(cv_eroding src/cv_eroding.cpp)
 add_executable(cv_dilating src/cv_dilating.cpp)
 add_executable(cv_homework5 src/cv_homework5.cpp)
 add_executable(cv_homework10 src/cv_homework10.cpp)
-
+add_executable(cv_morphology src/cv_morphology.cpp)
+add_executable(cv_hitormiss src/cv_hitormiss.cpp)
+add_executable(cv_line_detection src/cv_line_detection.cpp)
+add_executable(cv_pyramids src/cv_pyramids.cpp)
+add_executable(cv_threshold src/cv_threshold.cpp)
 
 target_link_libraries(
     cv_test
@@ -147,6 +151,36 @@ target_link_libraries(
 
 target_link_libraries(
     cv_homework10
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_morphology
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_hitormiss
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_line_detection
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_pyramids
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(
+    cv_threshold
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
