@@ -50,6 +50,7 @@ void depthImageCallback(const sensor_msgs::ImageConstPtr &msg){
     }
 
     depthInfo = cvImagePtr->image.at<float>(center);
+    std::cout << depthInfo <<std::endl;
 
 //    std::cout << cvImagePtr->image.at<float>(center) << "\t" << center << std::endl;
 
@@ -87,15 +88,18 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     //do operation over image
 
     // Convert input image to HSV
-    cv::Mat image = cvImagePtr->image;
+    cv::Mat image = cvImagePtr->image;;
     cv::Mat hsvImage;
     cv:cvtColor(image, hsvImage, CV_BGR2HSV);
 
+    imshow("hsv", hsvImage);
+
     // Threshold the HSV image, keep only the green pixels
     cv::Mat mask;
-    cv::Scalar dark_green(20, 80, 20);
+    cv::Scalar dark_green(10, 70, 10);
     cv::Scalar light_green(80, 255, 80);
     cv::inRange(hsvImage, dark_green, light_green, mask);
+    imshow("mask", mask);
 
     //cropping out top half of image
     int width = mask.cols;
@@ -135,7 +139,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         if(cy < search_top + height/8)
             cmd.linear.x = -0.2;
         else if (cy > search_top + height/8 && cy < search_top+height/4)
-            cmd.linear.x = (depthInfo < 1.1 && depthInfo > 0.9) ? 0.0 : 0.1; // use depth info to get more accuracy
+            cmd.linear.x = (depthInfo < 1.1) ? 0.0 : 0.1; // use depth info to get more accuracy
         else
             cmd.linear.x = 0.2;
 

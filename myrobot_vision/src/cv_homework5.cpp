@@ -68,7 +68,7 @@ void readMap(const nav_msgs::OccupancyGrid &map) {
             else if (map.data[currCell] == -1)
                 matMap.at<uchar>(i, j, CV_8UC1) = 128;  //  unknown cell (-1)
             else
-                matMap.at<uchar>(i, j, CV_8UC1) = 0; // occupied (100)
+                matMap.at<uchar>(i, j, CV_8UC1) = 0; // occupied (1-100)
 
             currCell++;
         }
@@ -84,7 +84,7 @@ void readMap(const nav_msgs::OccupancyGrid &map) {
     cv::Canny(blur, canny_output, 100, 100 * 2);
 
     vector<vector<cv::Point> > contours;
-    findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
     vector<vector<cv::Point> > contours_poly(contours.size());
     vector<cv::Rect> boundRect(contours.size());
@@ -96,12 +96,12 @@ void readMap(const nav_msgs::OccupancyGrid &map) {
 
     cv::Mat drawing = cv::Mat::zeros(canny_output.size(), CV_8UC3);
     cv::Scalar color = cv::Scalar(0,255,0);
-    drawContours(drawing, contours_poly, 0, color);
+    cv::drawContours(drawing, contours_poly, 0, color);
     cv::rectangle(drawing, boundRect[0].tl(), boundRect[0].br(), color, 2);
     imshow("contours", drawing);
 
     cv::Point topLeft(boundRect[0].tl() * (scale - 0.1));
-    cv::Point bottomRight(boundRect[0].br()* (scale + 0.1));
+    cv::Point bottomRight(boundRect[0].br() *(scale+ 0.1));
     cv::Rect rect(topLeft, bottomRight);
     cv::Mat dst = matMap(rect);
 

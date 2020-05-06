@@ -25,10 +25,10 @@ int main(int argc, char **argv) {
 
     image_transport::ImageTransport imageTransport(nodeHandle);
     image_transport::Subscriber image_sub = imageTransport.subscribe(
-        "/camera_link/image_raw", 1, imageCallback);
+        "/camera/rgb/image_raw", 1, imageCallback);
 
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_NORMAL);
     cv::createTrackbar( "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted",
                     OPENCV_WINDOW, &threshold_type,
                     max_type ); // Create Trackbar to choose type of Threshold
