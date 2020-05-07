@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     Mat vertical = bw.clone();
 
     // Specify size on horizontal axis
-    int horizontal_size = horizontal.cols/20; // change to 30 and see how an extra line appears
+    int horizontal_size = horizontal.cols/15; // change to 30 and see how an extra line appears
 
     // Create structure element for extracting horizontal lines through morphology operations
     Mat horizontalStructure = getStructuringElement(MORPH_RECT, Size(horizontal_size, 1));
@@ -50,10 +50,10 @@ int main(int argc, char** argv)
     waitKey(0);
 
     // Specify size on vertical axis
-    int vertical_size = vertical.rows / 30;
+    int vertical_size = vertical.rows / 15;
 
     // Create structure element for extracting vertical lines through morphology operations
-    Mat verticalStructure = getStructuringElement(MORPH_RECT, Size(1, vertical_size));
+    Mat verticalStructure = getStructuringElement(MORPH_ELLIPSE, Size(1, vertical_size));
 
     // Apply morphology operations
     erode(vertical, vertical, verticalStructure, Point(-1, -1));

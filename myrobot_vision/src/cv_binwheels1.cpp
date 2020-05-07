@@ -21,8 +21,8 @@ static const std::string OPENCV_WINDOW = "1: Crop, Mask, Canny Edges, Hough Circ
 ros::Publisher publisher;
 
 struct CameraInfo {
-    double yAngle = 52.5;
-    double xAngle = 73.0;
+    double yAngle = 51.0;
+    double xAngle = 91.0;
     double xPixels = 0;
     double yPixels = 0;
     cv::Point center = cv::Point(0.0, 0.0);
@@ -123,8 +123,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     dst.convertTo(toCanny, -1, 2, 10);
 
     //canny edge detector
-
-    Canny( toCanny, edges, 80, 150, 3 );
+    int lowThreshold = 90;
+    Canny( toCanny, edges, lowThreshold, lowThreshold*3, 3);
     dst = cv::Scalar::all(0);
     im.copyTo( dst, edges);
 
@@ -193,8 +193,8 @@ double getDistanceFromPoints(cv::Point &a, cv::Point &b) {
 
     double angle = getAngleFromPoints(a, b) * M_PI / 180.0;
 
-    // d = a*a + b*b - 2*a*b*cos(angle)
-    double d = pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle);
+    // d2 = a*a + b*b - 2*a*b*cos(angle)
+    double d = sqrt(pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle));
 
     return d;
 }

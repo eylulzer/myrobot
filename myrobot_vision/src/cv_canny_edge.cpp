@@ -19,7 +19,7 @@ static void CannyThreshold(int, void*)
 }
 int main( int argc, char** argv )
 {
-    src = cv::imread("/home/ros/catkin_ws/src/myrobot/myrobot_vision/images/right.png");
+    src = cv::imread("/home/ros/catkin_ws/src/myrobot/myrobot_vision/images/left.png");
     if( !src.data ) { printf("Error loading src image \n"); return -1; }
 
     dst.create( src.size(), src.type() );

@@ -2,7 +2,6 @@
 // Created by ros on 5.05.2020.
 //
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/image_encodings.h>
 #include <cv_bridge/cv_bridge.h>
@@ -17,13 +16,15 @@ void depthImageCallback(const sensor_msgs::ImageConstPtr &msg);
 float getDepthFromPoint(cv::Point &p);
 double getAngleFromPoints(cv::Point &a, cv::Point &b);
 double  getDistanceFromPoints(cv::Point &a, cv::Point &b);
+bool compareKeypoints(const cv::KeyPoint &k1, const cv::KeyPoint &k2);
+void showOnlyTwoCircles(const cv::KeyPoint &k1, const cv::KeyPoint &k2, const cv::Mat &src);
 
 static const std::string OPENCV_WINDOW = "4 : Closing, Blob ";
 ros::Publisher publisher;
 
 struct CameraInfo {
-    double yAngle = 52.5;
-    double xAngle = 73.0;
+    double yAngle = 51.0;
+    double xAngle = 91.0;
     double xPixels = 0;
     double yPixels = 0;
     cv::Point center = cv::Point(0.0, 0.0);
@@ -105,7 +106,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
     // Filter by Convexity
     params.filterByConvexity = true;
-    params.minConvexity = 0.2;
+    params.minConvexity = 0.1;
 
     // Filter by Inertia
     params.filterByInertia = true;
@@ -121,18 +122,89 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     // Detect blobs
     detector->detect(im, keypoints);
 
-    // Draw detected blobs as red circles.
+    // Draw detected blobs as circles.
     // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures
     // the size of the circle corresponds to the size of blob
 
-    cv::Mat im_with_keypoints;
-    drawKeypoints(im, keypoints, im_with_keypoints, cv::Scalar(0, 255, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    // remove blobs over the half of the image
+    keypoints.erase(std::remove_if(
+        keypoints.begin(), keypoints.end(), [](const cv::KeyPoint &keypoint) {
+            return keypoint.pt.y <= camera.yPixels/2;
+        }), keypoints.end());
+
+    //sort keypoints
+    std::sort(keypoints.begin(), keypoints.end(), compareKeypoints);
+    showOnlyTwoCircles(keypoints[0], keypoints[1], image);
+/*
+    for(int i = 0; i<keypoints.size(); i++){
+        const auto &keypoint = keypoints[i];
+
+        circle(image, keypoint.pt, (int)keypoint.size / 2, cv::Scalar(0, 255,255), 5);
+
+        //
+        for (int j = i+1 ; j < keypoints.size() ; j++){
+
+            cv::line(image, keypoint.pt, keypoints[j].pt, cv::Scalar(0,255,0), 3);
+            cv::Point a = keypoint.pt;
+            cv::Point b = keypoints[j].pt;
+
+            std::string dist = std::to_string(getDistanceFromPoints(a, b));
+            dist.resize(5); // mm precision only , 0.000
+
+            cv::Point textOrigin((a.x + b.x)/2 , a.y + 50);
+            cv::Mat r = cv::getRotationMatrix2D(textOrigin, 60, 1.0);
+            cv::Mat rotated = cv::Mat::zeros(image.size(), image.type());
+            cv::putText(rotated,
+                        "d: " + dist,
+                        textOrigin,
+                        cv::FONT_HERSHEY_DUPLEX,
+                        1.0,
+                        cv::Scalar(255,0, 100)
+            );
+
+            cv::warpAffine(rotated, rotated, r, image.size());
+            image+= rotated;
+        }
+    }
+    */
 
     // Show blobs
-    imshow(OPENCV_WINDOW, im_with_keypoints);
+    imshow(OPENCV_WINDOW, image);
     cv::waitKey(3);
 }
 
+bool compareKeypoints(const cv::KeyPoint &k1, const cv::KeyPoint &k2) {
+    return (k1.size > k2.size);
+}
+
+void showOnlyTwoCircles(const cv::KeyPoint &k1, const cv::KeyPoint &k2, const cv::Mat &src){
+
+
+    cv::Point a = k1.pt;
+    cv::Point b = k2.pt;
+    circle(src, a, (int)k1.size / 2, cv::Scalar(0, 255,255), 5);
+    circle(src, b, (int)k2.size / 2, cv::Scalar(0, 255,255), 5);
+
+    cv::line(src, a, b, cv::Scalar(0,255,0), 3);
+
+    std::string dist = std::to_string(getDistanceFromPoints(a, b));
+    dist.resize(5); // mm precision only , 0.000
+
+    cv::Point textOrigin((a.x + b.x)/2 , a.y+50);
+
+    cv::Mat r = cv::getRotationMatrix2D(textOrigin, 60, 1.0);
+    cv::Mat rotated = cv::Mat::zeros(src.size(), src.type());
+    cv::putText(rotated,
+                "distance: " + dist,
+                textOrigin,
+                cv::FONT_HERSHEY_DUPLEX,
+                1.0,
+                cv::Scalar(255,0, 100)
+    );
+
+    cv::warpAffine(rotated, rotated, r, src.size());
+    src+= rotated;
+}
 
 float getDepthFromPoint(cv::Point &p){
     if(depthImage.empty())
@@ -171,8 +243,10 @@ double getDistanceFromPoints(cv::Point &a, cv::Point &b) {
 
     double angle = getAngleFromPoints(a, b) * M_PI / 180.0;
 
-    // d = a*a + b*b - 2*a*b*cos(angle)
-    double d = pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle);
+    // d2 = a*a + b*b - 2*a*b*cos(angle)
+    double d = sqrt(pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle));
+
+    std::cout << a << " : " << b << " : " << angle << " | " << d << std::endl;
 
     return d;
 }

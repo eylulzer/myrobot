@@ -22,8 +22,8 @@ static const std::string OPENCV_WINDOW = "Img Window";
 ros::Publisher publisher;
 
 struct CameraInfo {
-    double yAngle = 52.5;
-    double xAngle = 73.0;
+    double yAngle = 51.0;
+    double xAngle = 91.0;
     double xPixels = 0;
     double yPixels = 0;
     cv::Point center = cv::Point(0.0, 0.0);
@@ -81,12 +81,14 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
     //do operation over image
     cv::Point a, b;
-    a = cv::Point(10, 275);
-    b = cv::Point(1910, 275);
+    a = cv::Point(814, 400);
+    b = cv::Point(1114, 400);
     cv::circle(cvImagePtr->image, a, 2, cv::Scalar(0,255,0), -1);
     cv::circle(cvImagePtr->image, b, 2, cv::Scalar(0,0,255), -1);
 
-    std::cout << "Angle: " << getAngleFromPoints(a, b) << " | Distance: " << getDistanceFromPoints(a, b) << std::endl;
+    getDistanceFromPoints(a, b);
+
+    std::cout << "\t-----" << std::endl;
 
     //Update GUI
     cv::imshow(OPENCV_WINDOW, cvImagePtr->image);
@@ -104,6 +106,9 @@ float getDepthFromPoint(cv::Point &p){
     } catch (cv_bridge::Exception &e) {
         std::cout << "error : " << e.what() << std::endl;
     }
+
+    std::cout << "Depth of " << p << " : " << depthInfo << std::endl;
+
     return depthInfo;
 }
 
@@ -115,7 +120,9 @@ double getAngleFromPoints(cv::Point &a, cv::Point &b){
     double x_angle = x_distance/camera.xPixels * camera.xAngle;
     double y_angle = y_distance/camera.yPixels * camera.yAngle;
 
-    double angle = sqrt(pow(x_angle,2) + pow(y_angle, 2));
+    double angle = sqrt(pow(x_angle,2) + pow(y_angle, 2)) * M_PI/180.0;
+
+    std::cout << "angle " << " : " << angle << std::endl;
 
     return angle;
 }
@@ -129,10 +136,12 @@ double getDistanceFromPoints(cv::Point &a, cv::Point &b) {
         return -1.0;
     }
 
-    double angle = getAngleFromPoints(a, b) * M_PI / 180.0;
+    double angle = getAngleFromPoints(a, b);
 
     // d = a*a + b*b - 2*a*b*cos(angle)
-    double d = pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle);
+    double d = sqrt(pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle));
+
+    std::cout << "distance " << " : " << d << std::endl;
 
     return d;
 }

@@ -28,3 +28,6 @@ foreach (SOURCE_FILE ${CV_EXAMPLES})
     add_executable(${filename} ${SOURCE_FILE})
     target_link_libraries( ${filename} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 endforeach (SOURCE_FILE ${CV_EXAMPLES})
+
+add_subdirectory(src/approach_bin)
+
