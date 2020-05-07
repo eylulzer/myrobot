@@ -134,8 +134,10 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
     //cv::drawContours(image, contours_poly, -1, cv::Scalar(0,255,255));
 
-    for( size_t i = 0; i< contours.size(); i++ )
-        circle( image, center[i], (int)radius[i], cv::Scalar(0, 255,255), 5, 8, 0 );
+    for( size_t i = 0; i< contours.size(); i++ ){
+        if(center[i].y >= camera.yPixels/2)
+            circle( image, center[i], (int)radius[i], cv::Scalar(0, 255,255), 5, 8, 0 );
+    }
 
     //Update GUI
     cv::imshow(OPENCV_WINDOW, image);

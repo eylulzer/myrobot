@@ -67,6 +67,9 @@ std::vector<cv::Vec3f> FindCircles::methodOne(const cv::Mat &image) {
         gray.rows / 12, 100, 31, 10, 100
     );
 
+    for(int i = 0; i< circlesArray.size(); i++)
+        circlesArray[i][1] += (image.rows/2 - 20); // according to crop
+
     return circlesArray;
 }
 
@@ -169,7 +172,8 @@ std::vector<cv::Vec3f> FindCircles::methodThree(const cv::Mat &image) {
     }
 
     for (size_t i = 0; i < contours.size(); i++)
-        circlesArray.push_back(cv::Vec3f(center[i].x, center[i].y, radius[i]));
+        if(center[i].y >= image.rows/2)
+            circlesArray.push_back(cv::Vec3f(center[i].x, center[i].y, radius[i]));
 
     return circlesArray;
 }
