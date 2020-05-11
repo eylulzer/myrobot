@@ -6,9 +6,10 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include "CustomCircle.h"
 
-std::vector<cv::Vec3f> FindCircles::methodOne(const cv::Mat &image) {
-    std::vector<cv::Vec3f> circlesArray;
+std::vector<CustomCircle> FindCircles::methodOne(const cv::Mat &image) {
+    std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
     //do operation over image
@@ -62,19 +63,20 @@ std::vector<cv::Vec3f> FindCircles::methodOne(const cv::Mat &image) {
     // black n white
     cvtColor(dst, gray, cv::COLOR_BGR2GRAY);
 
+    std::vector<cv::Vec3f> cA;
     cv::HoughCircles(
-        gray, circlesArray, cv::HOUGH_GRADIENT, 1,
+        gray, cA, cv::HOUGH_GRADIENT, 1,
         gray.rows / 12, 100, 31, 10, 100
     );
 
-    for(int i = 0; i< circlesArray.size(); i++)
-        circlesArray[i][1] += (image.rows/2 - 20); // according to crop
+    for(int i = 0; i< cA.size(); i++)
+        circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1] + (image.rows/2 - 20), cA[i][2]));
 
     return circlesArray;
 }
 
-std::vector<cv::Vec3f> FindCircles::methodTwo(const cv::Mat &image) {
-    std::vector<cv::Vec3f> circlesArray;
+std::vector<CustomCircle> FindCircles::methodTwo(const cv::Mat &image) {
+    std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
     //do operation over image
@@ -112,17 +114,19 @@ std::vector<cv::Vec3f> FindCircles::methodTwo(const cv::Mat &image) {
     cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
     GaussianBlur(gray, gray, cv::Size(9, 9), 2, 2);
 
-    cv::HoughCircles(gray, circlesArray, cv::HOUGH_GRADIENT, 1,
-                     gray.rows / 12,  // change this value to detect circles with different distances to each other
-                     100, 31, 10, 100 // change the last two parameters
-        // (min_radius & max_radius) to detect larger circles
+
+    std::vector<cv::Vec3f> cA;
+    cv::HoughCircles(
+        gray, cA, cv::HOUGH_GRADIENT, 1,
+        gray.rows / 12, 100, 31, 10, 100
     );
 
-    return circlesArray;
+    for(int i = 0; i< cA.size(); i++)
+        circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1], cA[i][2]));
 }
 
-std::vector<cv::Vec3f> FindCircles::methodThree(const cv::Mat &image) {
-    std::vector<cv::Vec3f> circlesArray;
+std::vector<CustomCircle> FindCircles::methodThree(const cv::Mat &image) {
+    std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
     cv::Mat hsvImage, dst, gray, mask;
@@ -173,13 +177,13 @@ std::vector<cv::Vec3f> FindCircles::methodThree(const cv::Mat &image) {
 
     for (size_t i = 0; i < contours.size(); i++)
         if(center[i].y >= image.rows/2)
-            circlesArray.push_back(cv::Vec3f(center[i].x, center[i].y, radius[i]));
+            circlesArray.push_back(CustomCircle(center[i].x, center[i].y, radius[i]));
 
     return circlesArray;
 }
 
-std::vector<cv::Vec3f> FindCircles::methodFour(const cv::Mat &image) {
-    std::vector<cv::Vec3f> circlesArray;
+std::vector<CustomCircle> FindCircles::methodFour(const cv::Mat &image) {
+    std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
     cv::Mat im;
@@ -208,7 +212,8 @@ std::vector<cv::Vec3f> FindCircles::methodFour(const cv::Mat &image) {
     detector->detect(im, keypoints);
 
     for (const auto &keypoint: keypoints)
-        circlesArray.push_back(cv::Vec3f(keypoint.pt.x , keypoint.pt.y, keypoint.size/2.0));
+        if(keypoint.pt.y >= image.rows/2.0)
+            circlesArray.emplace_back(CustomCircle(keypoint.pt.x , keypoint.pt.y, keypoint.size/2.0));
 
     return circlesArray;
 }

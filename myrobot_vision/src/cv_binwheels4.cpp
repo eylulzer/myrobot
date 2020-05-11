@@ -115,7 +115,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     // Storage for blobs
     std::vector<cv::KeyPoint> keypoints;
 
-
     // Set up detector with params
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
 

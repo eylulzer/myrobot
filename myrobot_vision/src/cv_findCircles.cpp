@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     Mat src, src_gray;
 
     /// Read the image
-    src = cv::imread("/home/ros/catkin_ws/src/myrobot/myrobot_vision/images/circle.png");
+    src = cv::imread("/home/ros/catkin_ws/src/myrobot/myrobot_vision/images/right.png");
     if( !src.data ) { printf("Error loading src image \n"); return -1; }
 
     /// Convert it to gray

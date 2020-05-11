@@ -81,14 +81,17 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
     //do operation over image
     cv::Point a, b;
-    a = cv::Point(814, 400);
-    b = cv::Point(1114, 400);
-    cv::circle(cvImagePtr->image, a, 2, cv::Scalar(0,255,0), -1);
-    cv::circle(cvImagePtr->image, b, 2, cv::Scalar(0,0,255), -1);
+    a = cv::Point(625, 400);
+    b = cv::Point(1230, 400);
+    cv::circle(cvImagePtr->image, a, 10, cv::Scalar(0,255,0), -1);
+    cv::circle(cvImagePtr->image, b, 10, cv::Scalar(0,0,255), -1);
 
     getDistanceFromPoints(a, b);
 
     std::cout << "\t-----" << std::endl;
+
+
+    get3dCoordinates(a);
 
     //Update GUI
     cv::imshow(OPENCV_WINDOW, cvImagePtr->image);
@@ -167,6 +170,8 @@ cv::Point3d get3dCoordinates(cv::Point &p2d){
 
     // convert to 3d point
     p = cv::Point3d(x, y, z);
+
+    std::cout << "\n\n" << p << std::endl;
 
     return p;
 }

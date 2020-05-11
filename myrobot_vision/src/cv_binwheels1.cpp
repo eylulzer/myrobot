@@ -100,7 +100,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
     black.copyTo(hsvImage, mask);
 
-//    imshow("hsvImage after mask", hsvImage);
+    //imshow("hsvImage after mask", hsvImage);
 
     // bottom part of image
     cv::Point cropOrigin(0, image.rows/2 - 20);
@@ -111,12 +111,15 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     //blur
     cv::medianBlur(im, dst,5);
 
+
     //sharpen
     cv::Mat kern = (cv::Mat_<char>(3, 3) << 0, -1, 0,
         -1, 5, -1,
         0, -1, 0);
 
     cv::filter2D(dst, dst, dst.depth(), kern);
+
+
 
     //add brightness
     cv::Mat toCanny, edges;
@@ -129,14 +132,16 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     im.copyTo( dst, edges);
 
 
+    imshow("edge", dst);
+
+
     // black n white
     cvtColor(dst, gray, cv::COLOR_BGR2GRAY);
-//    imshow("gray" , gray);
 
     std::vector<cv::Vec3f> circles;
 
     cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1,
-                     gray.rows/12,  // change this value to detect circles with different distances to each other
+                     100,  // change this value to detect circles with different distances to each other
                      100, 31, 10, 100 // change the last two parameters
         // (min_radius & max_radius) to detect larger circles
     );

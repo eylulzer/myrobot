@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <unordered_set>
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/image_encodings.h>
@@ -11,13 +12,14 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "PointMeasure.h"
 #include "FindCircles.h"
+#include "CustomCircle.h"
 
 class ApproachBin {
 public:
     ApproachBin() : imageTransport(image_transport::ImageTransport(nodeHandle)) {}
 
     void init() {
-        mainThread = nodeHandle.createTimer(ros::Duration(0.2), &ApproachBin::detectCircles, this);
+        mainThread = nodeHandle.createTimer(ros::Duration(1.0), &ApproachBin::detectCircles, this);
         raw_sub = imageTransport.subscribe("/camera/rgb/image_raw", 1, &ApproachBin::imageCallback, this);
         rgb_sub = imageTransport.subscribe("/camera/depth/image_raw", 1, &ApproachBin::depthImageCallback, this);
     }
@@ -56,36 +58,50 @@ public:
     void detectCircles(const ros::TimerEvent &event) {
         mCirclesArray.clear();
 
-        if(rgbImage.empty()) return;
+        if (rgbImage.empty()) return;
         cv::Mat img = this->rgbImage.clone();
 
         for (const auto &item : this->findCircles.methodOne(this->rgbImage)){
-            cv::circle(img, cv::Point2f(item[0], item[1]), item[2], cv::Scalar(0,0,255), 2, cv::LINE_AA);
-            this->mCirclesArray.push_back(item);
-        }
-
-        for (const auto &item : this->findCircles.methodTwo(this->rgbImage)){
-            cv::circle(img, cv::Point2f(item[0], item[1]), item[2], cv::Scalar(0,255,0), 2, cv::LINE_AA);
-            this->mCirclesArray.push_back(item);
+//            cv::circle(img, cv::Point2f(item.x, item.y), item.radius, cv::Scalar(0,0,255), 2, cv::LINE_AA);
+//            this->mCirclesArray.push_back(item);
+//        }
+//
+//        for (const auto &item : this->findCircles.methodTwo(this->rgbImage)){
+//            cv::circle(img, cv::Point2f(item.x, item.y), item.radius, cv::Scalar(0,255,0), 2, cv::LINE_AA);
+//            this->mCirclesArray.push_back(item);
         }
 
         for (const auto &item : this->findCircles.methodThree(this->rgbImage)){
-            cv::circle(img, cv::Point2f(item[0], item[1]), item[2], cv::Scalar(255,0,0), 2, cv::LINE_AA);
+            cv::circle(img, cv::Point2f(item.x, item.y), item.radius, cv::Scalar(255,0,0), 2, cv::LINE_AA);
             this->mCirclesArray.push_back(item);
         }
+//
+//        for (const auto &item : this->findCircles.methodFour(this->rgbImage)){
+//            cv::circle(img, cv::Point2f(item.x, item.y), item.radius, cv::Scalar(0,255,255), 2, cv::LINE_AA);
+//            this->mCirclesArray.push_back(item);
+//        }
 
-        for (const auto &item : this->findCircles.methodFour(this->rgbImage)){
-            cv::circle(img, cv::Point2f(item[0], item[1]), item[2], cv::Scalar(0,255,255), 2, cv::LINE_AA);
-            this->mCirclesArray.push_back(item);
-        }
+        removeIntersection(mCirclesArray);
+
+        for(const auto & c : mCirclesArray)
+            circle(img, cv::Point2f(c.x, c.y), c.radius+100, cv::Scalar(255, 255, 255), 3, cv::LINE_AA);
 
         cv::imshow("circles", img);
         cv::waitKey(3);
 
-        std::cout << std::endl;
     }
 
-    void measureDistances(){
+    void removeIntersection(std::vector<CustomCircle> &circleList) {
+
+        for (int i = 0; i < circleList.size(); i++) {
+            for (int j = i+1; j < circleList.size(); j++){
+                circleList[i].intersectsWith(circleList[j]);
+            }
+        }
+    }
+
+
+    void measureDistances() {
 
     }
 
@@ -99,7 +115,7 @@ private:
     cv::Mat rgbImage;
     PointMeasure pointMeasure;
     FindCircles findCircles;
-    std::vector<cv::Vec3f> mCirclesArray;
+    std::vector<CustomCircle> mCirclesArray;
 };
 
 int main(int argc, char **argv) {

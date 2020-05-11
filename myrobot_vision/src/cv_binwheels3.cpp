@@ -113,11 +113,12 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     // black n white
     cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
 
-//    imshow("gray", dst);
-
     cv::Mat blur, canny_output;
     cv::blur(gray, blur, cv::Size(5, 5));
     cv::Canny(blur, canny_output, 100, 100 * 2);
+
+
+    imshow("canny_output", canny_output);
 
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -126,13 +127,12 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     std::vector<cv::Point2f>center( contours.size() );
     std::vector<float>radius( contours.size() );
 
+    cv::drawContours(image, contours_poly, -1, cv::Scalar(0,255,255));
+
     for (size_t i = 0; i < contours.size(); i++) {
         approxPolyDP( cv::Mat(contours[i]), contours_poly[i], 3, true );
         minEnclosingCircle( contours_poly[i], center[i], radius[i] );
     }
-
-
-    //cv::drawContours(image, contours_poly, -1, cv::Scalar(0,255,255));
 
     for( size_t i = 0; i< contours.size(); i++ ){
         if(center[i].y >= camera.yPixels/2)

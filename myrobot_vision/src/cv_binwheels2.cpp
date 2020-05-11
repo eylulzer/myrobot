@@ -116,7 +116,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
     GaussianBlur( gray, gray, cv::Size(9, 9), 2, 2 );
 
-//    imshow("gray" , gray);
+    imshow("gray" , gray);
 
     std::vector<cv::Vec3f> circles;
 
