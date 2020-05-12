@@ -4,11 +4,9 @@
 
 #include "CustomCircle.h"
 #include <cmath>
-#include <vector>
-#include <algorithm>
-#include <unordered_set>
+#include <sstream>
 
-bool CustomCircle::operator==(const CustomCircle &other) {
+bool CustomCircle::operator==(const CustomCircle &other) const {
 
     float t = 0.01;
     return (
@@ -18,16 +16,33 @@ bool CustomCircle::operator==(const CustomCircle &other) {
     );
 }
 
-// negative result for not intersecting, 0 for touch, positive for intersection
-double CustomCircle::intersectsWith(const CustomCircle &other) {
-    // distance between 2 points , in this case two circles' centers
-    // distance = sqrt( (x2 - x1)2 + (y2 - y1)2 )
+bool CustomCircle::operator<(const CustomCircle &other) const {
+    return this->radius < other.radius;
+}
+
+// returns true or false 
+bool CustomCircle::includesCircle(const CustomCircle &other) const {
+    float bigCircleRadius, smallCircleRadius;
+
+    (this->radius > other.radius) ?
+        bigCircleRadius = this->radius, smallCircleRadius = other.radius :
+        bigCircleRadius = other.radius, smallCircleRadius = this->radius;
+
     double distance = sqrt(
         pow((other.x - this->x), 2) + pow((other.y - this->y), 2)
     );
 
-    // sum of circles' radius
-    double radiusSum = this->radius + other.radius;
-
-    return (radiusSum - distance);
+    // tolerance of 70%
+    return (distance + smallCircleRadius <= bigCircleRadius + bigCircleRadius * 0.7);
 }
+
+
+
+std::string CustomCircle::printCircle() const {
+    std::ostringstream ss;
+    ss << "x: " << this->x << "\ty: " << this->y << "\tradius: " << this->radius;
+    std::string p(ss.str());
+
+    return p;
+}
+

@@ -85,7 +85,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(image, hsvImage, CV_BGR2HSV);
 
     // closing
-    int morph_size = 20;
+    int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
     cv::morphologyEx(hsvImage, hsvImage, 3, element);

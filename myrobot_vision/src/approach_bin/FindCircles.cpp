@@ -17,7 +17,7 @@ std::vector<CustomCircle> FindCircles::methodOne(const cv::Mat &image) {
     cvtColor(image, hsvImage, CV_BGR2HSV);
 
     // closing
-    int morph_size = 20;
+    int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
     cv::morphologyEx(hsvImage, hsvImage, 3, element);
@@ -69,8 +69,8 @@ std::vector<CustomCircle> FindCircles::methodOne(const cv::Mat &image) {
         gray.rows / 12, 100, 31, 10, 100
     );
 
-    for(int i = 0; i< cA.size(); i++)
-        circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1] + (image.rows/2 - 20), cA[i][2]));
+    for (int i = 0; i < cA.size(); i++)
+        circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1] + (image.rows / 2 - 20), cA[i][2]));
 
     return circlesArray;
 }
@@ -121,8 +121,8 @@ std::vector<CustomCircle> FindCircles::methodTwo(const cv::Mat &image) {
         gray.rows / 12, 100, 31, 10, 100
     );
 
-    for(int i = 0; i< cA.size(); i++)
-        circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1], cA[i][2]));
+    for (auto & i : cA)
+        circlesArray.emplace_back(i[0], i[1], i[2]);
 }
 
 std::vector<CustomCircle> FindCircles::methodThree(const cv::Mat &image) {
@@ -176,7 +176,7 @@ std::vector<CustomCircle> FindCircles::methodThree(const cv::Mat &image) {
     }
 
     for (size_t i = 0; i < contours.size(); i++)
-        if(center[i].y >= image.rows/2)
+        if (center[i].y >= image.rows / 2)
             circlesArray.push_back(CustomCircle(center[i].x, center[i].y, radius[i]));
 
     return circlesArray;
@@ -212,8 +212,8 @@ std::vector<CustomCircle> FindCircles::methodFour(const cv::Mat &image) {
     detector->detect(im, keypoints);
 
     for (const auto &keypoint: keypoints)
-        if(keypoint.pt.y >= image.rows/2.0)
-            circlesArray.emplace_back(CustomCircle(keypoint.pt.x , keypoint.pt.y, keypoint.size/2.0));
+        if (keypoint.pt.y >= image.rows / 2.0)
+            circlesArray.emplace_back(CustomCircle(keypoint.pt.x, keypoint.pt.y, keypoint.size / 2.0));
 
     return circlesArray;
 }
