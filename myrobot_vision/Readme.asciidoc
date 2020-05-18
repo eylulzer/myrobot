@@ -1,0 +1,71 @@
+= ROS ve OpenCV
+
+_Yuklemek gereken paketler :_
+
+* opencv3
+* cv_bridge
+* image_transport
+
+[source, bash]
+----
+sudo apt install ros-kinetic-opencv3
+sudo apt install ros-kinetic-cv-bridge
+sudo apt install ros-kinetic-image-transport
+----
+
+== OpenCV ile ROS paket olusturma
+
+[source, bash]
+----
+cd ~/catkin_ws/src/
+catkin_create_pkg pkg_name cv_bridge image_transport roscpp sensor_msgs std_msgs
+----
+
+=== Olusturulan Paket'te CMakeLists.txt konfigurasyonu
+_Paketin icerisindeki CMakeLists.txt 'e asagidaki satirlari ekleyin:_
+[source, cmake]
+----
+set(CMAKE_CXX_STANDARD 11)
+
+find_package(OpenCV REQUIRED)
+
+include_directories(
+    #...
+    ${OpenCV_INCLUDE_DIRS}
+    #...
+)
+
+target_link_libraries(YOUR_EXECUTABLE
+    #...
+    ${OpenCV_LIBRARIES}
+    #...
+)
+----
+
+==== main.cpp icersinde dahil etmek gereken kutuphaneler
+
+[source, cpp]
+----
+#include <cv_bridge/cv_bridge.h> // <1>
+#include <image_transport/image_transport.h> // <2>
+#include <sensor_msgs/image_encodings.h> // <3>
+#include "opencv2/imgproc.hpp" // <4>
+#include "opencv2/imgcodecs.hpp" // <5>
+#include <opencv2/highgui/highgui.hpp> // <6>
+----
+<1> ROS resimler ve OpenCV resimler arasinda degistirme yapar (convert)
+<2> Nodehandle gibi ama resimler icin calisir
+<3> Encodings: bgr8, rgb8, grayscale etc
+<4> Resim ustunde degisiklik yapmak icin gerekli
+<5> Resim ustunde degisiklik yapmak icin gerekli
+<6> Pencere olusturmak ve resmi gostermek icin kullanilir
+
+==== Minimum ornek kod
+
+- *link:src/cv_minimum.cpp[cv_minimum.cpp]*
+* _ROS `/camera/rgb/image_row` uzerinde gelen resimleri alip, ekrana gosterir_
+
+
+== Goruntu isleme yaparak hassas yaklasma
+
+- *link:src/approach_bin/Readme.asciidoc[Readme]*

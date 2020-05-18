@@ -92,12 +92,16 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
     // Threshold the HSV image
     cvtColor(hsvImage, hsvImage, CV_BGR2HSV);
+    imshow("3 keep mask" , hsvImage);
+
     //range : 85 128 96 	 138 200 125
     cv::inRange(hsvImage, cv::Scalar(85, 128, 96), cv::Scalar(138, 200, 125), mask);
 
     // put black over hsvImage bin mask
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
     black.copyTo(hsvImage, ~mask);
+
+    imshow("4 keep mask" , hsvImage);
 
     //blur
     cv::medianBlur(hsvImage, dst,15);
@@ -112,11 +116,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     //add brightness
     dst.convertTo(gray, -1, 3, 20);
 
+    imshow("5 blur sharpen bright" , gray);
+
     // black n white
     cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
     GaussianBlur( gray, gray, cv::Size(9, 9), 2, 2 );
 
-    imshow("gray" , gray);
+    imshow("6 gray" , gray);
 
     std::vector<cv::Vec3f> circles;
 

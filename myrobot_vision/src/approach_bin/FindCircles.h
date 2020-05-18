@@ -10,6 +10,7 @@
 #include <vector>
 #include "CustomCircle.h"
 
+// <1>
 class FindCircles {
 public:
     std::vector<CustomCircle> methodOne(const cv::Mat &image);

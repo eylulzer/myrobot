@@ -84,11 +84,15 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::Mat hsvImage, dst, gray;
     cvtColor(image, hsvImage, CV_BGR2HSV);
 
+    imshow("1. hsv", hsvImage);
+
     // closing
     int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
     cv::morphologyEx(hsvImage, hsvImage, 3, element);
+
+    imshow("2. closing", hsvImage);
 
     // Threshold the HSV image, keep only the green pixels
     cv::Mat mask;
@@ -96,17 +100,21 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::Scalar light_green(80, 255, 80);
     cv::inRange(hsvImage, dark_green, light_green, mask);
 
+    imshow("3. mask", mask);
+
     // put black over hsvImage bin mask
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
     black.copyTo(hsvImage, mask);
 
-    //imshow("hsvImage after mask", hsvImage);
+    imshow("4. hsvImage after mask", hsvImage);
 
     // bottom part of image
     cv::Point cropOrigin(0, image.rows/2 - 20);
     cv::Size s(image.cols, image.rows - (image.rows/2 - 20));
     cv::Mat im = hsvImage(cv::Rect(cropOrigin, s));
     im = im.clone();
+
+    imshow("5. crop bottom", im);
 
     //blur
     cv::medianBlur(im, dst,5);
@@ -125,6 +133,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::Mat toCanny, edges;
     dst.convertTo(toCanny, -1, 2, 10);
 
+    imshow("6. blur, sharpen, brightness", toCanny);
+
     //canny edge detector
     int lowThreshold = 90;
     Canny( toCanny, edges, lowThreshold, lowThreshold*3, 3);
@@ -132,7 +142,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     im.copyTo( dst, edges);
 
 
-    imshow("edge", dst);
+    imshow("7. edge detector", dst);
 
 
     // black n white

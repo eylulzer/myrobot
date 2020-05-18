@@ -6,7 +6,9 @@
 #define ROS_WORKSPACE_POINTMEASURE_H
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include "CustomCircle.h"
 
+// <1>
 struct CameraInfo {
     double yAngle = 51.0;
     double xAngle = 91.0;
@@ -17,9 +19,10 @@ struct CameraInfo {
 
 class PointMeasure {
 public:
-    float getDepthFromPoint(const cv::Point &p, const cv::Mat &depthImage);
-    double getAngleFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage);
-    double getDistanceFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage);
+    static float getDepthFromPoint(const cv::Point &p, const cv::Mat &depthImage); // <2>
+    double getAngleFromPoints(const cv::Point &a, const cv::Point &b) const; // <3>
+    double getDistanceFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage) const; // <4>
+    double getDistanceFromCustomCircle(const CustomCircle &a, const CustomCircle &b) const; // <5>
     CameraInfo camera;
 };
 

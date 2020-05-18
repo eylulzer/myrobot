@@ -1,0 +1,198 @@
+= Approach Bin
+
+_Paketin amaci :_
+
+_Asagidaki cop kutusunu taniyip,
+robot tekerlek arasinda mesafeyi hesaplayip, altinda gecmeye calisir._
+
+image:../../images/front.png[]
+
+== Olusturulan kutuphaneler ve amaclari
+
+- *link:CustomCircle.h[CustomCircle]*
+* _Ozel yuvarlak nesnesi._
+
+- *link:PointMeasure.h[PointMeasure]*
+* _RGB ve Depth resmi alarak gercek dunyada
+herhangi 2  nokta arasinda mesafeyi hesaplamak icin bir nesne._
+
+- *link:FindCircles.h[FindCircles]*
+* _Yuvarlaklari bulmak ve ustunde islem yapmak icin dort farkli metod icerir_
+
+- *link:cv_approach_bin.h[cv_approach_bin]*
+* _Ustekileri kullanarak goruntu isleme ve navigasyon islemini yapar._
+
+== Calistirilabilir Dosya
+
+- *link:main.cpp[ApproachBin]*
+* _cv_approach_bin'den bir nesne yapar ve ros node baslatir._
+
+=== Custom Circle
+[source, cpp]
+----
+include::CustomCircle.h[lines=11..32]
+----
+<1> Constructors
+<2> Operator Overloading
+<3> Iki yuvarlaklar ic ice girmisse kontrol eder
+<4> RGB uzerinde pixel olarak ne kadar yakin ve depth uzerinde
+gercek hayatta ne kadar yakin oldugunu tespit edip true veya false dondurur.
+<5> Yuvarlak bilgileri string seklinde dondurur.
+
+=== Point Measure
+
+[source, cpp]
+----
+include::PointMeasure.h[lines=8..26]
+----
+<1> Kamera bilgileri (acilar, orta noktasi ve pixel sayilari)
+<2> Depth resmi'den kamera ve gercek dunyada bir nokta arasinda mesafeyi verir
+<3> 2 Noktanin kamera ile olusturdugu aciyi geri verir
+<4> 2 Nokta arasinda mesafeyi metre olarak verir.
+<5> 2 Ozel yuvarlak(tekerlek) arasinda mesafeyi verir.
+
+=== Find Circles
+
+[source, cpp]
+----
+include::FindCircles.h[lines=13..23]
+----
+<1> Tekerleri bulmak icin dort farkli yontem
+
+==== Method 1
+
+[source, cpp]
+----
+include::FindCircles.cpp[lines=11..74]
+----
+<1> BGR formattan HSV'e donusturme
+image:../../images/method1/1.png[]
+
+<2> Tekerlekler daha belli olsun diye closing efekti uygulanir
+image:../../images/method1/2.png[]
+
+<3> Cop Kutusunun Yesil rengini ayri bir mask olarak alinir
+image:../../images/method1/3.png[]
+
+<4> Maski gercek goruntu uzerinde uyguluyoruz
+image:../../images/method1/4.png[]
+
+<5> Sadece tekerleklerle ilgilenmek icin goruntunun ust kismini kropluyoruz
+image:../../images/method1/5.png[]
+
+<6> Blur, Sharpen ve Brightness ekliyoruz
+image:../../images/method1/6.png[]
+
+<7> Canny Edges kullanarak kenar belirleme yapiyoruz
+image:../../images/method1/7.png[]
+
+<8> Hough circles ile resmideki yuvarlaklari buluyoruz
+image:../../images/method1/8.png[]
+
+
+==== Method 2
+
+[source, cpp]
+----
+include::FindCircles.cpp[lines=76..122]
+----
+<1> BGR formattan HSV'e donusturme
+image:../../images/method2/1.png[]
+
+<2> Tekerlekler daha belli olsun diye closing efekti uygulanir
+image:../../images/method2/2.png[]
+
+<3> Tekerleri rengini bularak ayri bir mask olarak alinir
+image:../../images/method2/3.png[]
+
+<4> Maskin tersi gercek goruntu uzerinde uyguluyoruz ve sadece tekerler kalir
+image:../../images/method2/4.png[]
+
+<5> Blur, Sharpen ve Brightness eklenir.
+image:../../images/method2/5.png[]
+
+<6> Goruntuyu Gray'e ceviriyoruz ve blur uyguluyoruz
+image:../../images/method2/6.png[]
+
+<7> Hough Circles ile Tekerlekleri buluyoruz
+image:../../images/method2/7.png[]
+
+
+==== Method 3
+
+[source, cpp]
+----
+include::FindCircles.cpp[lines=124..181]
+----
+<1> BGR formattan HSV'e donusturme
+image:../../images/method3/1.png[]
+
+<2> Tekerlekler daha belli olsun diye closing efekti uygulanir
+image:../../images/method3/2.png[]
+
+<3> Tekerleri rengini bularak ayri bir mask olarak alinir
+image:../../images/method3/3.png[]
+
+<4> Maskin tersi gercek goruntu uzerinde uyguluyoruz ve sadece tekerler kalir
+image:../../images/method3/4.png[]
+
+<5> Sharpen, Brightness eklenir ve Gray'e donusturme yapilir.
+image:../../images/method3/5.png[]
+
+<6> Blur uygulanir ve Canny Edge ile kenarlari buluyoruz.
+image:../../images/method3/6.png[]
+
+<7> FindContours ile konturlari buluyoruz
+image:../../images/method3/7.png[]
+
+<8> approxPolyDP ve minEnclosingCircle ile tekerlekleri buluyoruz
+image:../../images/method3/8.png[]
+
+
+==== Method 4
+
+[source, cpp]
+----
+include::FindCircles.cpp[lines=183..217]
+----
+<1> Tekerlekler daha belli olsun diye closing efekti uygulanir
+image:../../images/method4/1.png[]
+
+<2> SimpleBlobDetector Kullanmak icin bir parametre listesi hazirlanir
+<3> SimpleBlobDetector ile tekerlerkleri buluyoruz
+image:../../images/method4/2.png[]
+
+
+
+=== cv_approach_bin
+
+[source, cpp]
+----
+include::cv_approach_bin.h[lines=11..70]
+----
+<1> RGB image, Depth Image icin subscriberler baslatir, cmd_vel'e publisher.
+Tekerlekler bulmak icin ve farkli navigasyonlar icin 4 ayri thread baslatir.
+Daha sonra robot copun altindayken kullanacagimiz template resimler yukler.
+
+<2> Sol , Sag ve On bolgelere bakarak engel tanima islemini yapar.
+
+<3> 4 Farkli metodlari calistirarak Cop kutunun tekerlekleri bulur.
+
+<4> Birbiriyle kesisen yuvarlaklarin orta noktasini alip , tek bir yuvarlak cizer
+
+<5> detectCircles metodunun bir parcasi olarak, kesisen yuvarlaklari bir matris seklinde tutar.
+
+<6> Depth resmi kullanarak az kesisen yuvarlaklari tek bir yuvarlaga donusturur.
+
+<7> Ayri bir thread olarak, yuvarlaklar bulunduktan sonra bir navigasyon algoritmasi olarak calisir.
+
+<8> Cop kutusuna 2 metreden daha fazla yaklastiginda calisir,
+hassas yaklasim icin closeNav calistirir,
+diger navigasyon threadleri durdurur.
+
+<9> Ayri bir thread olarak, cop kutusunun altinda girip durmaya karar verir.
+
+<10> Cop kutusunun rengini bulup mask dondurur.
+
+<11> -1'den 1'e kadar bir resim baska bir resminde olup olmadigini
+bir emin degeri olarak verir. Burada template resimleri kullaniyoruz.

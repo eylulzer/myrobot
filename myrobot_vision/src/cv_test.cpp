@@ -23,7 +23,7 @@ public:
             : it_(nh_)
     {
         // Subscribe to input video feed and publish output video feed
-        image_sub_ = it_.subscribe("/camera_link/image_raw", 1,
+        image_sub_ = it_.subscribe("/camera/rgb/image_raw", 1,
                                    &ImageConverter::imageCb, this);
         image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
@@ -48,9 +48,6 @@ public:
             return;
         }
 
-        // Draw an example circle on the video stream
-        if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-            cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
 
         // Update GUI Window
         cv::imshow(OPENCV_WINDOW, cv_ptr->image);

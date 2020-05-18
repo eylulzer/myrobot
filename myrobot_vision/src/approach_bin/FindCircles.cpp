@@ -12,62 +12,60 @@ std::vector<CustomCircle> FindCircles::methodOne(const cv::Mat &image) {
     std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
-    //do operation over image
     cv::Mat hsvImage, dst, gray;
-    cvtColor(image, hsvImage, CV_BGR2HSV);
+    cvtColor(image, hsvImage, CV_BGR2HSV); // <1>
 
-    // closing
+    // <2>
     int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
-    cv::morphologyEx(hsvImage, hsvImage, 3, element);
+    cv::morphologyEx(hsvImage, hsvImage, 3, element); // closing
 
-    // Threshold the HSV image, keep only the green pixels
+    // <3>
     cv::Mat mask;
     cv::Scalar dark_green(10, 50, 10);
     cv::Scalar light_green(80, 255, 80);
-    cv::inRange(hsvImage, dark_green, light_green, mask);
+    cv::inRange(hsvImage, dark_green, light_green, mask); // Threshold the HSV image, keep only the green pixels
 
-    // put black over hsvImage bin mask
+    // <4>
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
-    black.copyTo(hsvImage, mask);
+    black.copyTo(hsvImage, mask); // put black over hsvImage bin mask
 
-    // bottom part of image
+    // <5>
     cv::Point cropOrigin(0, image.rows / 2 - 20);
     cv::Size s(image.cols, image.rows - (image.rows / 2 - 20));
     cv::Mat im = hsvImage(cv::Rect(cropOrigin, s));
-    im = im.clone();
+    im = im.clone(); // bottom part of image
 
-    //blur
-    cv::medianBlur(im, dst, 5);
+    //<6>
+    cv::medianBlur(im, dst, 5); // blur
 
-    //sharpen
     cv::Mat kern = (cv::Mat_<char>(3, 3) <<
                                          0, -1, 0,
-        -1, 5, -1,
-        0, -1, 0);
+                                        -1, 5, -1,
+                                         0, -1, 0);
 
-    cv::filter2D(dst, dst, dst.depth(), kern);
+    cv::filter2D(dst, dst, dst.depth(), kern); // sharpen
 
-    //add brightness
     cv::Mat toCanny, edges;
-    dst.convertTo(toCanny, -1, 2, 10);
+    dst.convertTo(toCanny, -1, 2, 10); //add brightness
 
-    //canny edge detector
+    // <7>
     int lowThreshold = 90;
-    Canny(toCanny, edges, lowThreshold, lowThreshold * 3, 3);
+    Canny(toCanny, edges, lowThreshold, lowThreshold * 3, 3); // canny edge detector
     dst = cv::Scalar::all(0);
     im.copyTo(dst, edges);
 
 
-    // black n white
+    // black & white
     cvtColor(dst, gray, cv::COLOR_BGR2GRAY);
 
+    // <8>
     std::vector<cv::Vec3f> cA;
     cv::HoughCircles(
         gray, cA, cv::HOUGH_GRADIENT, 1,
         gray.rows / 12, 100, 31, 10, 100
-    );
+    ); // Hough Circles algorithm to find circles in an image
 
     for (int i = 0; i < cA.size(); i++)
         circlesArray.push_back(CustomCircle(cA[i][0], cA[i][1] + (image.rows / 2 - 20), cA[i][2]));
@@ -79,42 +77,40 @@ std::vector<CustomCircle> FindCircles::methodTwo(const cv::Mat &image) {
     std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
-    //do operation over image
+    // <1>
     cv::Mat hsvImage, dst, gray, mask;
     cvtColor(image, hsvImage, CV_BGR2HSV);
 
-    // closing
+    // <2>
     int morph_size = 10;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
-    cv::morphologyEx(hsvImage, hsvImage, 3, element);
+    cv::morphologyEx(hsvImage, hsvImage, 3, element); // closing
 
-    // Threshold the HSV image
-    cvtColor(hsvImage, hsvImage, CV_BGR2HSV);
+    // <3>
+    cvtColor(hsvImage, hsvImage, CV_BGR2HSV); // reconvert and Threshold the HSV image
     cv::inRange(hsvImage, cv::Scalar(85, 128, 96), cv::Scalar(138, 200, 125), mask);
 
-    // put black over hsvImage bin mask
+    // <4>
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
-    black.copyTo(hsvImage, ~mask);
+    black.copyTo(hsvImage, ~mask); // put black over hsvImage bin mask
 
-    //blur
-    cv::medianBlur(hsvImage, dst, 15);
+    // <5>
+    cv::medianBlur(hsvImage, dst, 15); // blur
 
-    //sharpen
     cv::Mat kern = (cv::Mat_<char>(3, 3) << 0, -1, 0,
         -1, 5, -1,
         0, -1, 0);
 
-    cv::filter2D(dst, dst, dst.depth(), kern);
+    cv::filter2D(dst, dst, dst.depth(), kern); //sharpen
 
-    //add brightness
-    dst.convertTo(gray, -1, 3, 20);
+    dst.convertTo(gray, -1, 3, 20); //add brightness
 
-    // black n white
-    cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
+    // <6>
+    cvtColor(gray, gray, cv::COLOR_BGR2GRAY); // black & white
     GaussianBlur(gray, gray, cv::Size(9, 9), 2, 2);
 
-
+    // <7>
     std::vector<cv::Vec3f> cA;
     cv::HoughCircles(
         gray, cA, cv::HOUGH_GRADIENT, 1,
@@ -129,40 +125,41 @@ std::vector<CustomCircle> FindCircles::methodThree(const cv::Mat &image) {
     std::vector<CustomCircle> circlesArray;
     if (image.empty()) return circlesArray;
 
+    // <1>
     cv::Mat hsvImage, dst, gray, mask;
     cvtColor(image, hsvImage, CV_BGR2HSV);
 
-    // closing
+    // <2>
     int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
-    cv::morphologyEx(hsvImage, hsvImage, 3, element);
+    cv::morphologyEx(hsvImage, hsvImage, 3, element); //closing
 
-    // Threshold the HSV image
-    cvtColor(hsvImage, hsvImage, CV_BGR2HSV);
+    // <3>
+    cvtColor(hsvImage, hsvImage, CV_BGR2HSV); // Threshold the HSV image
     cv::inRange(hsvImage, cv::Scalar(85, 128, 96), cv::Scalar(138, 200, 125), mask);
 
-    // put black over hsvImage bin mask
+    // <4>
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
-    black.copyTo(hsvImage, ~mask);
+    black.copyTo(hsvImage, ~mask);  // put black over hsvImage bin mask
 
-    //sharpen
+    // <5>
     cv::Mat kern = (cv::Mat_<char>(3, 3) << 0, -1, 0,
         -1, 5, -1,
         0, -1, 0);
 
-    cv::filter2D(hsvImage, dst, dst.depth(), kern);
+    cv::filter2D(hsvImage, dst, dst.depth(), kern); //sharpen
 
-    //add brightness
-    dst.convertTo(gray, -1, 3, 20);
+    dst.convertTo(gray, -1, 3, 20); //add brightness
 
-    // black n white
-    cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
+    cvtColor(gray, gray, cv::COLOR_BGR2GRAY); // black n white
 
+    // <6>
     cv::Mat blur, canny_output;
     cv::blur(gray, blur, cv::Size(5, 5));
     cv::Canny(blur, canny_output, 100, 100 * 2);
 
+    // <7>
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
@@ -170,6 +167,7 @@ std::vector<CustomCircle> FindCircles::methodThree(const cv::Mat &image) {
     std::vector<cv::Point2f> center(contours.size());
     std::vector<float> radius(contours.size());
 
+    // <8>
     for (size_t i = 0; i < contours.size(); i++) {
         approxPolyDP(cv::Mat(contours[i]), contours_poly[i], 3, true);
         minEnclosingCircle(contours_poly[i], center[i], radius[i]);
@@ -188,14 +186,14 @@ std::vector<CustomCircle> FindCircles::methodFour(const cv::Mat &image) {
 
     cv::Mat im;
 
-    // closing
+    // <1>
     int morph_size = 15;
     cv::Mat element = getStructuringElement(2, cv::Size(2 * morph_size + 1, 2 * morph_size + 1),
                                             cv::Point(morph_size, morph_size));
-    cv::morphologyEx(image, im, 3, element);
+    cv::morphologyEx(image, im, 3, element); // closing
 
-    // Setup SimpleBlobDetector parameters.
-    cv::SimpleBlobDetector::Params params;
+    // <2>
+    cv::SimpleBlobDetector::Params params; // Setup SimpleBlobDetector parameters.
     params.minThreshold = 10;
     params.maxThreshold = 200;
     params.filterByArea = true;
@@ -207,6 +205,7 @@ std::vector<CustomCircle> FindCircles::methodFour(const cv::Mat &image) {
     params.filterByInertia = true;
     params.minInertiaRatio = 0.01;
 
+    // <3>
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
     std::vector<cv::KeyPoint> keypoints;
     detector->detect(im, keypoints);

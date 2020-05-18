@@ -12,7 +12,8 @@ bool CustomCircle::operator==(const CustomCircle &other) const {
     return (
         std::abs(this->x - other.x) < t &&
         std::abs(this->y - other.y) < t &&
-        std::abs(this->radius - other.radius) < t
+        std::abs(this->radius - other.radius) < t &&
+        std::abs(this->range - other.range) < t
     );
 }
 
@@ -24,25 +25,38 @@ bool CustomCircle::operator<(const CustomCircle &other) const {
 bool CustomCircle::includesCircle(const CustomCircle &other) const {
     float bigCircleRadius, smallCircleRadius;
 
-    (this->radius > other.radius) ?
-        bigCircleRadius = this->radius, smallCircleRadius = other.radius :
-        bigCircleRadius = other.radius, smallCircleRadius = this->radius;
+    if (this->radius > other.radius){
+        bigCircleRadius = this->radius;
+        smallCircleRadius = other.radius;
+    } else{
+        bigCircleRadius = other.radius;
+        smallCircleRadius = this->radius;
+    }
 
     double distance = sqrt(
         pow((other.x - this->x), 2) + pow((other.y - this->y), 2)
     );
 
-    // tolerance of 70%
-    return (distance + smallCircleRadius <= bigCircleRadius + bigCircleRadius * 0.7);
+    // tolerance of 50%
+    return (distance + smallCircleRadius <= bigCircleRadius + bigCircleRadius * 0.5);
 }
 
+bool CustomCircle::isInApproxWith(const CustomCircle &other, float pixelApprox, float distApprox) const {
+    return (
+        std::abs(this->x - other.x) < pixelApprox &&
+        std::abs(this->y - other.y) < pixelApprox &&
+        std::abs(this->radius - other.radius) < pixelApprox &&
+        std::abs(this->range - other.range) < distApprox
+    );
+}
 
-
-std::string CustomCircle::printCircle() const {
+std::string CustomCircle::toString() const {
     std::ostringstream ss;
-    ss << "x: " << this->x << "\ty: " << this->y << "\tradius: " << this->radius;
-    std::string p(ss.str());
+    ss << "x: " << this->x <<
+        "\ty: " << this->y <<
+        "\tradius: " << this->radius <<
+        "\tdistance: " << this->range;
 
-    return p;
+    return ss.str();
 }
 

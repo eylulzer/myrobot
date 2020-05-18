@@ -15,10 +15,11 @@ float PointMeasure::getDepthFromPoint(const cv::Point &p, const cv::Mat &depthIm
     } catch (cv::Exception &e) {
         std::cout << "error : " << e.what() << std::endl;
     }
+
     return depthInfo;
 }
 
-double PointMeasure::getAngleFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage) {
+double PointMeasure::getAngleFromPoints(const cv::Point &a, const cv::Point &b) const {
     double x_distance = a.x - b.x;
     double y_distance = a.y - b.y;
 
@@ -29,7 +30,7 @@ double PointMeasure::getAngleFromPoints(const cv::Point &a, const cv::Point &b, 
     return angle;
 }
 
-double PointMeasure::getDistanceFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage) {
+double PointMeasure::getDistanceFromPoints(const cv::Point &a, const cv::Point &b, const cv::Mat &depthImage) const {
 
     float a_d = getDepthFromPoint(a, depthImage);
     float b_d = getDepthFromPoint(b, depthImage);
@@ -38,12 +39,27 @@ double PointMeasure::getDistanceFromPoints(const cv::Point &a, const cv::Point &
         return -1.0;
     }
 
-    double angle = getAngleFromPoints(a, b, depthImage) * M_PI / 180.0;
+    double angle = getAngleFromPoints(a, b) * M_PI / 180.0;
 
     // d2 = a*a + b*b - 2*a*b*cos(angle)
     double d = sqrt(pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle));
 
-    std::cout << a << " : " << b << " : " << angle << " | " << d << std::endl;
+    return d;
+}
+
+double PointMeasure::getDistanceFromCustomCircle(const CustomCircle &a, const CustomCircle &b) const {
+
+    float a_d = a.range;
+    float b_d = b.range;
+
+    if (std::isnan(a_d) || std::isnan(b_d)) {
+        return -1.0;
+    }
+
+    double angle = getAngleFromPoints(cv::Point(a.x, a.y), cv::Point(b.x, b.y)) * M_PI / 180.0;
+
+    // d2 = a*a + b*b - 2*a*b*cos(angle)
+    double d = sqrt(pow(a_d, 2) + pow(b_d, 2) - 2 * a_d * b_d * cos(angle));
 
     return d;
 }

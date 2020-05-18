@@ -94,11 +94,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cvtColor(hsvImage, hsvImage, CV_BGR2HSV);
     //range : 85 128 96 	 138 200 125
     cv::inRange(hsvImage, cv::Scalar(85, 128, 96), cv::Scalar(138, 200, 125), mask);
+    imshow("3", hsvImage);
 
     // put black over hsvImage bin mask
     cv::Mat black = cv::Mat::zeros(hsvImage.size(), hsvImage.type());
     black.copyTo(hsvImage, ~mask);
 
+    imshow("4", hsvImage);
 
     //sharpen
     cv::Mat kern = (cv::Mat_<char>(3, 3) << 0, -1, 0,
@@ -113,12 +115,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     // black n white
     cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
 
+    imshow("5", gray);
+
     cv::Mat blur, canny_output;
     cv::blur(gray, blur, cv::Size(5, 5));
     cv::Canny(blur, canny_output, 100, 100 * 2);
 
-
-    imshow("canny_output", canny_output);
+    imshow("6 canny_output", canny_output);
 
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -127,7 +130,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     std::vector<cv::Point2f>center( contours.size() );
     std::vector<float>radius( contours.size() );
 
-    cv::drawContours(image, contours_poly, -1, cv::Scalar(0,255,255));
+    drawContours(image, contours, -1, cv::Scalar(0,255,255));
+    imshow("7", image);
 
     for (size_t i = 0; i < contours.size(); i++) {
         approxPolyDP( cv::Mat(contours[i]), contours_poly[i], 3, true );
