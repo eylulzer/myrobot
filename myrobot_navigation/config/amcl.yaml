@@ -1,5 +1,6 @@
 # Publish scans from best pose at a max of 10 Hz 
 odom_model_type : diff
+use_map_topic : true
 gui_publish_rate : 10.0
 laser_max_beams : 120
 laser_max_range : 40.00

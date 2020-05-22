@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="laser_scanner">
-<xacro:property name="laser_width" value="0.08"/>
-<xacro:property name="laser_height" value="0.15"/>
-<xacro:property name="laser_length" value="0.08"/>
+<xacro:property name="laser_width" value="0.02"/>
+<xacro:property name="laser_height" value="0.04"/>
+<xacro:property name="laser_length" value="0.02"/>
 <xacro:macro name="laser_scanner">
 
     <link name="laser_scanner">

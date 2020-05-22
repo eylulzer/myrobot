@@ -20,8 +20,8 @@ void ApproachBin::init() {
     obstacleThread = nodeHandle.createTimer(ros::Duration(0.1), &ApproachBin::detectObstacle, this);
     mainThread = nodeHandle.createTimer(ros::Duration(0.1), &ApproachBin::detectCircles, this);
 
-    navigationThread = nodeHandle.createTimer(ros::Duration(0.05), &ApproachBin::circleNavigation, this);
-    closeNavThread = nodeHandle.createTimer(ros::Duration(0.2), &ApproachBin::closeNav, this, false, false);
+    navigationThread = nodeHandle.createTimer(ros::Duration(0.1), &ApproachBin::circleNavigation, this);
+    closeNavThread = nodeHandle.createTimer(ros::Duration(0.1), &ApproachBin::closeNav, this, false, false);
 
     publisher = nodeHandle.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
@@ -36,6 +36,9 @@ void ApproachBin::init() {
 
         this->templArray.push_back(frame);
     }
+
+    isDone = false;
+
 }
 
 void ApproachBin::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
@@ -330,6 +333,8 @@ void ApproachBin::closeNav(const ros::TimerEvent &event) {
     } else if (conf > 0.8) {
         cmd.linear.x = 0.0;
         cmd.angular.z = 0.0;
+        this->isDone = true;
+        this->closeNavThread.stop();
     }
 
     publisher.publish(cmd);

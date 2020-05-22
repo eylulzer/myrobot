@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<launch>
+
+    <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
+        <arg name="map_file" value="$(find myrobot_navigation)/maps/mymap.yaml"/>
+    </include>
+
+</launch>

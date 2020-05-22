@@ -10,16 +10,30 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     sensor_msgs
     geometry_msgs
+    message_generation
     std_msgs
     )
 
 find_package(OpenCV REQUIRED)
+
+
+add_service_files(
+    FILES
+    Yuk.srv
+)
+
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+)
+
 catkin_package()
 
 include_directories(
     ${catkin_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 )
+
 
 file(GLOB CV_EXAMPLES src/*.cpp)
 foreach (SOURCE_FILE ${CV_EXAMPLES})

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="camera_link">
-    <xacro:property name="camera_width" value="0.08"/>
-    <xacro:property name="camera_height" value="0.15"/>
-    <xacro:property name="camera_length" value="0.08"/>
+    <xacro:property name="camera_width" value="0.02"/>
+    <xacro:property name="camera_height" value="0.03"/>
+    <xacro:property name="camera_length" value="0.02"/>
     <xacro:macro name="camera_link">
 
         <link name="camera_link">
@@ -24,47 +24,44 @@
         <joint name="camera_joint" type="fixed">
             <parent link="base_link"/>
             <child link="camera_link"/>
-            <origin rpy="0.0 0.0 0.0" xyz="0.45 0 ${base_height/2 + camera_height/2}"/>
+            <origin rpy="0.0 0.0 0.0" xyz="${base_width/2 + camera_width/2} 0.0 ${camera_height + 0.01}"/>
 
         </joint>
 
         <!-- camera -->
         <gazebo reference="camera_link">
-            <sensor type="camera" name="camera1">
-                <update_rate>30.0</update_rate>
-                <camera name="head">
-                    <horizontal_fov>1.3962634</horizontal_fov>
+            <sensor type="depth" name="camera">
+                <always_on>true</always_on>
+                <update_rate>20.0</update_rate>
+                <camera>
+                    <horizontal_fov>1.3924</horizontal_fov>
                     <image>
-                        <width>800</width>
-                        <height>800</height>
                         <format>R8G8B8</format>
+                        <width>1920</width>
+                        <height>1080</height>
                     </image>
                     <clip>
-                        <near>0.02</near>
-                        <far>300</far>
+                        <near>0.05</near>
+                        <far>8.0</far>
                     </clip>
-                    <noise>
-                        <type>gaussian</type>
-                        <!-- Noise is sampled independently per pixel on each frame.
-                             That pixel's noise value is added to each of its color
-                             channels, which at that point lie in the range [0,1]. -->
-                        <mean>0.0</mean>
-                        <stddev>0.007</stddev>
-                    </noise>
                 </camera>
-                <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+                    <cameraName>camera</cameraName>
                     <alwaysOn>true</alwaysOn>
-                    <updateRate>0.0</updateRate>
-                    <cameraName>camera_link</cameraName>
-                    <imageTopicName>image_raw</imageTopicName>
-                    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-                    <frameName>camera_link</frameName>
-                    <hackBaseline>0.07</hackBaseline>
-                    <distortionK1>0.0</distortionK1>
-                    <distortionK2>0.0</distortionK2>
-                    <distortionK3>0.0</distortionK3>
-                    <distortionT1>0.0</distortionT1>
-                    <distortionT2>0.0</distortionT2>
+                    <updateRate>10</updateRate>
+                    <imageTopicName>rgb/image_raw</imageTopicName>
+                    <depthImageTopicName>depth/image_raw</depthImageTopicName>
+                    <pointCloudTopicName>depth/points</pointCloudTopicName>
+                    <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+                    <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+                    <frameName>camera_depth_optical_frame</frameName>
+                    <baseline>0.1</baseline>
+                    <distortion_k1>0.0</distortion_k1>
+                    <distortion_k2>0.0</distortion_k2>
+                    <distortion_k3>0.0</distortion_k3>
+                    <distortion_t1>0.0</distortion_t1>
+                    <distortion_t2>0.0</distortion_t2>
+                    <pointCloudCutoff>0.4</pointCloudCutoff>
                 </plugin>
             </sensor>
         </gazebo>

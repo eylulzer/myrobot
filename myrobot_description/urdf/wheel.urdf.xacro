@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="wheel">
 
-    <xacro:property name="wheel_radius" value="0.2"/>
-    <xacro:property name="wheel_length" value="0.08"/>
-    <xacro:macro name="wheel" params="prefix reflect">
+    <xacro:property name="wheel_radius" value="0.075"/>
+    <xacro:property name="wheel_length" value="0.04"/>
+    <xacro:macro name="wheel" params="prefix reflect_x reflect_y">
 
         <link name="${prefix}_wheel">
             <visual>
@@ -25,13 +25,13 @@
             <axis xyz="0 1 0" rpy="0 0 0"/>
             <parent link="base_link"/>
             <child link="${prefix}_wheel"/>
-            <origin xyz="0.3 ${(base_width/2 + wheel_length/2) * reflect} ${wheel_radius - base_distance_from_ground - (base_height/2)}"
+            <origin xyz="${0.3 * reflect_x} ${(base_width/2 + wheel_length/2) * reflect_y} ${wheel_radius - base_distance_from_ground - (base_height/2)}"
                     rpy="0 0 0"/>
         </joint>
 
-        <transmission name="simple_${prefix}_trans" type="SimpleTransmission">
+        <transmission name="${prefix}_wheel_trans" type="SimpleTransmission">
             <type>transmission_interface/SimpleTransmission</type>
-            <actuator name="${prefix}_motor">
+            <actuator name="${prefix}_wheel_motor">
                 <mechanicalReduction>1</mechanicalReduction>
             </actuator>
             <joint name="${prefix}_wheel_joint">

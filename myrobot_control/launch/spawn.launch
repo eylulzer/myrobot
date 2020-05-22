@@ -28,7 +28,8 @@
 
     <!-- Custom Diff Drive Controller -->
     <rosparam file="$(find myrobot_control)/config/control.yaml" command="load" ns="/"/>
+
     <node name="myrobot_control" pkg="controller_manager" type="spawner" ns="/"
-        respawn="false" output="screen" args="mobile_base_controller"/>
+          respawn="false" output="screen" args="mobile_base_controller"/>
 
 </launch>

@@ -46,6 +46,9 @@ public:
 
     double imageMatched(); // <11>
 
+    bool isDone;
+
+
 private:
     ros::NodeHandle nodeHandle;
     ros::Publisher publisher;

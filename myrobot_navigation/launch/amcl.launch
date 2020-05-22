@@ -4,9 +4,10 @@
 
     <node pkg="map_server" type="map_server" name="map_server" args="$(find myrobot_navigation)/maps/mymap.yaml"/>
     <node pkg="amcl" type="amcl" name="amcl">
-        <remap from="scan" to="/myrobot/laser/scan"/>
-        <rosparam file="$(find myrobot_navigation)/config/amcl.yaml" command="load" ns="/" />
-        <remap from="odom" to="/mobile_base_controller/odom"/>
+        <remap from="scan" to="myrobot/laser/scan"/>
+        <rosparam file="$(find myrobot_navigation)/config/amcl.yaml" command="load" />
+
+        <remap from="odom" to="mobile_base_controller/odom"/>
     </node>
 
     <include file="$(find myrobot_navigation)/launch/move_base.launch" />
