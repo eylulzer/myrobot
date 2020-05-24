@@ -9,25 +9,25 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   actionlib
   rospy
-    message_generation
+  message_generation
   std_msgs
 )
 
 add_service_files(
-FILES
-Yuk.srv
+  FILES
+  Yuk.srv
 )
 
 generate_messages(
-DEPENDENCIES
-std_msgs
+  DEPENDENCIES
+  std_msgs
 )
 
 catkin_package(
 )
 
 include_directories(
- include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 

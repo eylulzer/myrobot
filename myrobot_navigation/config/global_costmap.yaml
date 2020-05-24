@@ -3,14 +3,25 @@ global_costmap:
   robot_base_frame: base_link
   update_frequency: 5.0
   static_map: true
-  
-  obstacle_range: 6.0
-  raytrace_range: 6.5
-  #footprint: [[x0, y0], [x1, y1], ... [xn, yn]]
-  robot_radius: 0.75
+
+  obstacle_range: 39.0
+  raytrace_range: 41.0
+  footprint: [[-1.5, 1.5], [1.5, 1.5], [1.5, -1.5], [-1.5, -1.5]]
   inflation_radius: 1.0
 
-  observation_sources: laser_scan_sensor 
+  obstacle_layer:
+    observation_sources: laser_scan_sensor
 
-  laser_scan_sensor: {sensor_frame: laser_scanner, data_type: LaserScan, topic: myrobot/laser/scan, marking: true, clearing: true}
+  laser_scan_sensor: {
+    sensor_frame: laser_scanner,
+    data_type: LaserScan,
+    topic: /myrobot/laser/scan,
+    marking: true,
+    clearing: true
+  }
 
+  plugins:
+    - name: obstacles_layer
+      type: "costmap_2d::ObstacleLayer"
+    - name: inflater
+      type: "costmap_2d::InflationLayer"

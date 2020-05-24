@@ -9,10 +9,10 @@ max_particles : 2000
 
 kld_err : 0.01
 kld_z : 0.99
-odom_alpha1 : 0.01
-odom_alpha2 : 0.01
-odom_alpha3 : 0.01
-odom_alpha4 : 0.01
+odom_alpha1 : 0.2
+odom_alpha2 : 0.2
+odom_alpha3 : 0.2
+odom_alpha4 : 0.2
 
 laser_z_hit : 0.9
 laser_z_short : 0.05
