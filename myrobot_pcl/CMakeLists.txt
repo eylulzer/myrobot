@@ -21,3 +21,6 @@ include_directories(
 
 add_executable(pcl_test src/pcl_test.cpp)
 target_link_libraries(pcl_test ${catkin_LIBRARIES})
+
+add_executable(pcl_nodelet src/pcl_nodelet.cpp)
+target_link_libraries(pcl_nodelet ${catkin_LIBRARIES})
