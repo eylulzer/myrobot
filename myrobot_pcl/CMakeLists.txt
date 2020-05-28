@@ -25,8 +25,11 @@ include_directories(
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable(pcl_test src/pcl_test.cpp)
-target_link_libraries(pcl_test ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
-add_executable(pcl_nodelet src/pcl_nodelet.cpp)
-target_link_libraries(pcl_nodelet ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+file(GLOB PCL_EXAMPLES src/*.cpp)
+foreach (SOURCE_FILE ${PCL_EXAMPLES})
+    string(REPLACE ".cpp" "" filename ${SOURCE_FILE})
+    string(REPLACE "$ENV{HOME}/catkin_ws/src/myrobot/myrobot_pcl/src/" "" filename ${filename})
+    add_executable(${filename} ${SOURCE_FILE})
+    target_link_libraries( ${filename} ${catkin_LIBRARIES}  ${PCL_LIBRARIES})
+endforeach (SOURCE_FILE ${CV_EXAMPLES})

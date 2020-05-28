@@ -29,4 +29,7 @@
     <node name="myrobot_control" pkg="controller_manager" type="spawner" ns="/"
           respawn="false" output="screen" args="mobile_base_controller"/>
 
+    <node name="statictransf" pkg="tf" type="static_transform_publisher" ns="/"
+          output="screen" args="0 0 0 -1.57 0 -1.57 base_link camera_depth_optical_frame 100"/>
+
 </launch>
