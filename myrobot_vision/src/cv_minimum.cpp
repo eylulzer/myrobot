@@ -19,9 +19,9 @@ int main(int argc, char **argv) {
     image_transport::Subscriber image_sub = imageTransport.subscribe(
         "/camera/rgb/image_raw", 1, imageCallback);
 
-    cv::namedWindow("Window Name");
+    cv::namedWindow("Minimum");
     ros::spin();
-    cv::destroyWindow("Window Name");
+    cv::destroyWindow("Minimum");
 
     return 0;
 }
@@ -37,6 +37,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     }
 
     //Update GUI
-    cv::imshow("Window Name", cvImagePtr->image);
+    cv::imshow("Minimum", cvImagePtr->image);
     cv::waitKey(3);
 }

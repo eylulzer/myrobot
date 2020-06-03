@@ -4,14 +4,16 @@
 
     <!--Robot Description from URDF-->
     <param name="robot_description"
-        command="$(find xacro)/xacro $(find myrobot_description)/urdf/myrobot.urdf.xacro"/>
+        command="$(find xacro)/xacro --inorder $(find myrobot_description)/urdf/myrobot.urdf.xacro"/>
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
 
+    <!--<node name="rviz" pkg="rviz" type="rviz"/>-->
+
     <!--Gazebo empty world launch file -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find myrobot_description)/gazebo/opencv.world"/>
+    <arg name="world_name" value="$(find myrobot_description)/gazebo/opencv.world"/>
         <arg name="debug" value="false"/>
         <arg name="gui" value="true"/>
         <arg name="paused" value="false"/>
@@ -21,15 +23,6 @@
 
     <!--Gazebo Simulator-->
     <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
-          args="-urdf -param robot_description -model myrobot -x -0.5 -y 0.0 -z 0.4 -Y 3.14" output="screen"/>
-
-    <!-- Custom Diff Drive Controller -->
-    <rosparam file="$(find myrobot_control)/config/control.yaml" command="load" ns="/"/>
-
-    <node name="myrobot_control" pkg="controller_manager" type="spawner" ns="/"
-          respawn="false" output="screen" args="mobile_base_controller"/>
-
-    <node name="statictransf" pkg="tf" type="static_transform_publisher" ns="/"
-          output="screen" args="0 0 0 -1.57 0 -1.57 base_link camera_depth_optical_frame 100"/>
-
+          args="-urdf -param robot_description -model myrobot" output="screen"/>
+        
 </launch>

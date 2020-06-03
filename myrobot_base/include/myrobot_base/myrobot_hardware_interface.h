@@ -48,16 +48,16 @@ public:
     };
 
     void read(ros::Time time, const ros::Duration &period){
-        pose[0] = pose[0] + (cmd[0] * period.toSec()); //2. kısım angular yol 
+        pose[0] = pose[0] + (cmd[0] * period.toSec()); // rad
         pose[1] = pose[1] + (cmd[1] * period.toSec());
 
-        vel[0] = cmd[0];
+        vel[0] = cmd[0]; // rad/s
         vel[1] = cmd[1];
 
     };
     
     void write(ros::Time time, const ros::Duration &period){
-        
+
     };
 
 };

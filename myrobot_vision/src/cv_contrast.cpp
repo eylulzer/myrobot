@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 
     image_transport::ImageTransport imageTransport(nodeHandle);
     image_transport::Subscriber image_sub = imageTransport.subscribe(
-            "/camera_link/image_raw", 1, imageCallback);
+            "/camera/rgb/image_raw", 1, imageCallback);
 
     contrast = 2.0; // 1.0-3.0 value
 

@@ -44,4 +44,5 @@ foreach (SOURCE_FILE ${CV_EXAMPLES})
 endforeach (SOURCE_FILE ${CV_EXAMPLES})
 
 add_subdirectory(src/approach_bin)
+add_subdirectory(src/opencv_road)
 

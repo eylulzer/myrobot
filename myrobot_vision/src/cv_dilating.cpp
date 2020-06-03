@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
     image_transport::ImageTransport imageTransport(nodeHandle);
     image_transport::Subscriber image_sub = imageTransport.subscribe(
-            "/camera_link/image_raw", 1, imageCallback);
+            "/camera/rgb/image_raw", 1, imageCallback);
 
     cv::namedWindow(OPENCV_WINDOW);
     cv::createTrackbar("Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", OPENCV_WINDOW,
