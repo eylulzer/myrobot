@@ -10,24 +10,15 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     sensor_msgs
     geometry_msgs
-    message_generation
     std_msgs
+    myrobot_msgs
     )
 
 find_package(OpenCV REQUIRED)
 
-
-add_service_files(
-    FILES
-    Yuk.srv
+catkin_package(
+    CATKIN_DEPENDS myrobot_msgs
 )
-
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-)
-
-catkin_package()
 
 include_directories(
     ${catkin_INCLUDE_DIRS}

@@ -48,6 +48,7 @@ public:
     };
 
     void read(ros::Time time, const ros::Duration &period){
+
         pose[0] = pose[0] + (cmd[0] * period.toSec()); // rad
         pose[1] = pose[1] + (cmd[1] * period.toSec());
 

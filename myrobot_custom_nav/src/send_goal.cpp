@@ -5,7 +5,8 @@
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
-#include <myrobot_custom_nav/Yuk.h>
+#include <myrobot_msgs/Yuk.h>
+
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -41,8 +42,8 @@ int main(int argc, char** argv){
         ROS_INFO("Call the camera navigation service");
 
 
-        ros::ServiceClient client = n.serviceClient<myrobot_custom_nav::Yuk>("yuk_kaldir");
-        myrobot_custom_nav::Yuk srv;
+        ros::ServiceClient client = n.serviceClient<myrobot_msgs::Yuk>("yuk_kaldir");
+        myrobot_msgs::Yuk srv;
         srv.request.Reqs = true;
         if (client.call(srv))
         {

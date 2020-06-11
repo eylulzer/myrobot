@@ -15,7 +15,7 @@
 
 void imageCallback(const sensor_msgs::ImageConstPtr &msg);
 
-cv::Mat getROI(const cv::Mat &mRoi);
+cv::Mat getROI(const cv::Mat &mRoi, cv::Point roi_points[], int n);
 
 std::vector<MyLine> groupLines(std::vector<cv::Vec4i> &mLines);
 
@@ -49,6 +49,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     }
 
     cv::Mat original = cvImagePtr->image.clone();
+
     cv::Point origin = cv::Point(0, original.size().height / 2);
     cv::Point size = cv::Point(original.size().width, original.size().height);
     cv::Rect r = cv::Rect(origin, size);
@@ -77,7 +78,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::findContours(mask, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
     std::vector<std::vector<cv::Point> > contours_poly(contours.size());
-    std::vector<cv::Rect> boundRect(contours.size());
 
     for (size_t i = 0; i < contours.size(); i++) {
         cv::approxPolyDP(contours[i], contours_poly[i], 3, true);
@@ -86,13 +86,87 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     cv::Mat drawing = cv::Mat::zeros(mask.size(), CV_8UC1);
     cv::drawContours(drawing, contours_poly, -1, cv::Scalar::all(255), 5);
 
-    mRoi = getROI(drawing);
+    cv::Point roi_pts[4];
+
+    roi_pts[0] = cv::Point(drawing.size().width * 0.10, drawing.size().height * 0.30); // tl
+    roi_pts[1] = cv::Point(drawing.size().width * 0.05, drawing.size().height * 0.80); // bl
+    roi_pts[2] = cv::Point(drawing.size().width * 0.95, drawing.size().height * 0.80); // br
+    roi_pts[3] = cv::Point(drawing.size().width * 0.90, drawing.size().height * 0.30); // tr
+
+    mRoi = getROI(drawing, roi_pts, 4);
 
     cv::Mat linedst;
     std::vector<cv::Vec4i> lines;
     HoughLinesP(mRoi, lines, 1, CV_PI / 180, 50, 100, 10);
 
     std::vector<MyLine> finalLines = groupLines(lines);
+
+    switch (finalLines.size()) {
+        case 0:
+            cmd.linear.x = 0.0;
+            cmd.angular.z = 0.0;
+            break;
+        case 1:
+            cmd.linear.x = 0.2;
+            cmd.angular.z =  (finalLines[0].slope > 0) ? 0.2 : -0.2;
+            break;
+        default:
+            break;
+    }
+
+    if (finalLines.size() >= 2) {
+
+        bool plus_side_flag = false;
+        bool minus_side_flag = false;
+        bool lines_intersect = false;
+        int to = 200; //px
+        int center_width = mRoi.size().width / 2;
+
+        for (int i = 0; i < finalLines.size() ; i++) {
+            if (center_width + to > finalLines[i].start.x || center_width + to  > finalLines[i].end.x)
+                minus_side_flag = true;
+
+            if (center_width - to < finalLines[i].start.x || center_width - to < finalLines[i].end.x)
+                plus_side_flag = true;
+
+            if(finalLines.size() - 1 > i)
+                if(MyLine::doLinesintersect(finalLines[i], finalLines[i+1]))
+                    lines_intersect = true;
+        }
+
+        cmd.linear.x = 0.05;
+        if (!plus_side_flag || !minus_side_flag) // means that all lines are on the same side
+            cmd.angular.z = (!plus_side_flag) ? 0.1 : -0.1;
+        else if (lines_intersect && finalLines.size() == 2){
+            cmd.angular.z = fmin(finalLines[0].middle.x, finalLines[1].middle.x) > center_width ? -0.15 : 0.15;
+        } else {
+            cv::Mat white(mRoi.size(), CV_8UC1, cv::Scalar::all(255));
+            int n = finalLines.size() * 2;
+            cv::Point rp[n];
+
+            for (int i = 0; i < n; i += 2) {
+                rp[i] = finalLines[i / 2].start;
+                rp[i + 1] = finalLines[i / 2].end;
+            }
+
+            cv::Mat tRoi = getROI(white, rp, n);
+
+            cv::Moments M = cv::moments(tRoi);
+            cv::Point tRoi_center(0, 0);
+
+            if (M.m00 > 0) {
+                tRoi_center.x = int(M.m10 / M.m00);
+                tRoi_center.y = int(M.m01 / M.m00);
+
+                cv::circle(cvImagePtr->image, tRoi_center, 50, cv::Scalar(0,255, 100), -1);
+
+                float err = (tRoi.size().width / 2 - tRoi_center.x) / 1000.0;
+                cmd.angular.z = (std::abs(err) < 0.075) ? 0.0 : err;
+            }
+        }
+    }
+
+    pub.publish(cmd);
 
     // draw roi
     for (const auto &l : finalLines) {
@@ -117,28 +191,19 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
                      cv::Point(0, original.size().height / 2)
     );
 
-    cv::resize(cvImagePtr->image, cvImagePtr->image, cv::Size(), 0.75, 0.75);
+    cv::resize(cvImagePtr->image, cvImagePtr->image, cv::Size(), 0.5, 0.5);
     cv::imshow("OPENCV_WINDOW", cvImagePtr->image);
     cv::waitKey(3);
 }
 
 
-cv::Mat getROI(const cv::Mat &mRoi) {
-    cv::Point bottom_left(mRoi.size().width * 0.05, mRoi.size().height * 0.80);
-    cv::Point top_left(mRoi.size().width * 0.10, mRoi.size().height * 0.30);
-    cv::Point bottom_right(mRoi.size().width * 0.95, mRoi.size().height * 0.80);
-    cv::Point top_right(mRoi.size().width * 0.90, mRoi.size().height * 0.30);
+cv::Mat getROI(const cv::Mat &mRoi, cv::Point roi_points[], int n) {
 
     cv::Mat mask = cv::Mat::zeros(mRoi.size(), mRoi.type());
     cv::Mat black = cv::Mat::zeros(mRoi.size(), mRoi.type());
-    cv::Point roi_points[4];
-    roi_points[0] = top_left;
-    roi_points[1] = bottom_left;
-    roi_points[2] = bottom_right;
-    roi_points[3] = top_right;
 
     const cv::Point *ppt[1] = {roi_points};
-    int npt[] = {4};
+    int npt[] = {n};
     cv::fillPoly(black, ppt, npt, 1, cv::Scalar::all(255));
 
     mRoi.copyTo(mask, black);
@@ -156,6 +221,10 @@ std::vector<MyLine> groupLines(std::vector<cv::Vec4i> &mLines) {
     int numberOfLines = cv::partition(mLinesVector, labels, MyLine::areLinesEqual);
 
     std::vector<MyLine> finalLines;
+
+    for(const auto &l : labels)
+        std::cout << l << "\t";
+    std::cout<<std::endl<<std::endl;
 
     for (int i = 0; i < numberOfLines; i++) {
         std::vector<float> coords_x, coords_y;
@@ -177,14 +246,15 @@ std::vector<MyLine> groupLines(std::vector<cv::Vec4i> &mLines) {
 
         if (mSlope > 0) {
             finalLines.emplace_back(
-                cv::Point2f(*result_x.first, *result_y.first),
-                cv::Point2f(*result_x.second, *result_y.second));
+                cv::Point2f(*result_x.first, *result_y.first),   // minumum, minimum
+                cv::Point2f(*result_x.second, *result_y.second)); // maximum, maximum
         } else
             finalLines.emplace_back(
-                cv::Point2f(*result_x.first, *result_y.second),
-                cv::Point2f(*result_x.second, *result_y.first));
+                cv::Point2f(*result_x.first, *result_y.second), // minumum, maximum
+                cv::Point2f(*result_x.second, *result_y.first)); // maximum, minumum
 
     }
 
     return finalLines;
 }
+

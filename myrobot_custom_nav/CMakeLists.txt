@@ -9,21 +9,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   actionlib
   rospy
-  message_generation
   std_msgs
-)
-
-add_service_files(
-  FILES
-  Yuk.srv
-)
-
-generate_messages(
-  DEPENDENCIES
-  std_msgs
+  myrobot_msgs
 )
 
 catkin_package(
+    CATKIN_DEPENDS myrobot_msgs
 )
 
 include_directories(
@@ -33,3 +24,4 @@ include_directories(
 
 add_executable(send_goal src/send_goal.cpp)
 target_link_libraries(send_goal ${catkin_LIBRARIES})
+add_dependencies(send_goal myrobot_msgs_generate_messages_cpp)

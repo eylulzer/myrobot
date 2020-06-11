@@ -4,12 +4,12 @@
 
 #include <ros/ros.h>
 #include "cv_approach_bin.h"
-#include "myrobot_vision/Yuk.h"
+#include <myrobot_msgs/Yuk.h>
 
 bool isRunning = false;
 
-bool respond(myrobot_vision::Yuk::Request  &req,
-             myrobot_vision::Yuk::Response &res)
+bool respond(myrobot_msgs::Yuk::Request  &req,
+             myrobot_msgs::Yuk::Response &res)
 {
 
     ROS_INFO_STREAM("REQUEST: " << req.Reqs << std::endl);
