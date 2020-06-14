@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     image_transport::Subscriber rawimage_sub = imageTransport.subscribe(
         "/camera/depth/image_raw", 1, depthImageCallback);
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_NORMAL);
+    cv::namedWindow(OPENCV_WINDOW, cv::WINDOW_NORMAL);
     ros::spin();
     cv::destroyWindow(OPENCV_WINDOW);
 

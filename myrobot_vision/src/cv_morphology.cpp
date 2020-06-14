@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         "/camera/rgb/image_raw", 1, imageCallback);
 
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_NORMAL); // Create window
+    cv::namedWindow(OPENCV_WINDOW, cv::WINDOW_NORMAL); // Create window
     cv::createTrackbar("Operator:\n 0: Opening - 1: Closing  \n 2: Gradient - 3: Top Hat \n 4: Black Hat", OPENCV_WINDOW,
                        &morph_operator, max_operator);
     cv::createTrackbar("Element:\n 0: Rect - 1: Cross - 2: Ellipse", OPENCV_WINDOW,

@@ -176,7 +176,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             cv::Point(l.end.x, l.end.y + original.size().height / 2),
             cv::Scalar(0, 255, 255),
             5,
-            CV_AA
+            cv::LINE_AA
         );
     }
 

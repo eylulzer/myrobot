@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     if( !src.data ) { printf("Error loading src image \n"); return -1; }
 
     /// Convert it to gray
-    cvtColor( src, src_gray, CV_BGR2GRAY );
+    cvtColor( src, src_gray, cv::COLOR_BGR2GRAY );
 
     /// Reduce the noise so we avoid false circle detection
     GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     int min_distance = 15;
 
     std::string window_name = "Hough Circle";
-    namedWindow( window_name , CV_WINDOW_NORMAL );
+    namedWindow( window_name , cv::WINDOW_NORMAL );
     createTrackbar("param1", window_name, &param1, 1000);
     createTrackbar("param2", window_name, &param2, 1000);
     createTrackbar("param3", window_name, &param3, 1000);
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         cv::Mat show;
         src.copyTo(show);
         /// Apply the Hough Transform to find the circles
-        HoughCircles(src_gray, circles, CV_HOUGH_GRADIENT, 1, min_distance+1, param1+1, param2+1, param3, param4);
+        HoughCircles(src_gray, circles, cv::HOUGH_GRADIENT, 1, min_distance+1, param1+1, param2+1, param3, param4);
 
         /// Draw the circles detected
         for (size_t i = 0; i < circles.size(); i++) {

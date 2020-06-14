@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     for(int i = 1; i<5; i++){
         std::string spath = "/home/ros/catkin_ws/src/myrobot/myrobot_vision/images/templ" +
                             std::to_string(i) + ".png";
-        cv::Mat frame = cv::imread(spath, CV_LOAD_IMAGE_GRAYSCALE);
+        cv::Mat frame = cv::imread(spath, cv::IMREAD_GRAYSCALE);
         if( !frame.data ) { printf("Error loading src image: %s\n", spath.c_str()); continue; }
         templArray.push_back(frame);
     }

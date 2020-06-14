@@ -34,8 +34,8 @@ int main( int argc, char** argv )
         cout << "Can't read one of the images" << endl;
         return EXIT_FAILURE;
     }
-    namedWindow( image_window, CV_WINDOW_NORMAL );
-    namedWindow( result_window, CV_WINDOW_NORMAL );
+    namedWindow( image_window, cv::WINDOW_NORMAL );
+    namedWindow( result_window, cv::WINDOW_NORMAL );
     const char* trackbar_label = "Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED";
     createTrackbar( trackbar_label, image_window, &match_method, max_Trackbar, MatchingMethod );
     MatchingMethod( 0, 0 );

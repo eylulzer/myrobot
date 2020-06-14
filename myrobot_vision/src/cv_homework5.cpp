@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "load_map");
     ros::NodeHandle nodeHandle;
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_AUTOSIZE);
-    cv::namedWindow("original Map", CV_WINDOW_NORMAL);
+    cv::namedWindow(OPENCV_WINDOW, cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("original Map", cv::WINDOW_NORMAL);
 
     if (!requestMap(nodeHandle))
         exit(-1);

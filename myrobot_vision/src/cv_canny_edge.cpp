@@ -24,7 +24,7 @@ int main( int argc, char** argv )
 
     dst.create( src.size(), src.type() );
     cvtColor( src, src_gray, COLOR_BGR2GRAY );
-    namedWindow( window_name, CV_WINDOW_NORMAL );
+    namedWindow( window_name, cv::WINDOW_NORMAL );
     createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold, CannyThreshold );
     CannyThreshold(0, nullptr);
     waitKey(0);

@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     frame = cv::imread("/home/melodic/catkin_ws/src/myrobot/myrobot_vision/images/road.png");
     if( !frame.data ) { printf("Error loading src image \n"); return -1; }
 
-    cv::resize(frame, frame, cv::Size(frame.cols * 0.5,frame.rows * 0.5), 0, 0, CV_INTER_LINEAR);
+    cv::resize(frame, frame, cv::Size(frame.cols * 0.5,frame.rows * 0.5), 0, 0, cv::INTER_LINEAR);
 
     while (true) {
 

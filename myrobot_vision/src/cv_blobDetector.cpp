@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     image_transport::Subscriber image_sub = imageTransport.subscribe(
         "/camera/rgb/image_raw", 1, imageCallback);
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_NORMAL);
+    cv::namedWindow(OPENCV_WINDOW, cv::WINDOW_NORMAL);
     ros::spin();
     cv::destroyWindow(OPENCV_WINDOW);
 

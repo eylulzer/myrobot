@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     image_sub = imageTransport.subscribe(
         "/camera_link/image_raw", 1, imageCallback);
 
-    cv::namedWindow(OPENCV_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(OPENCV_WINDOW, cv::WINDOW_AUTOSIZE);
     ros::spin();
     cv::destroyWindow(OPENCV_WINDOW);
 
