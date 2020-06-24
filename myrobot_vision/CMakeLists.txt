@@ -25,15 +25,8 @@ include_directories(
     ${OpenCV_INCLUDE_DIRS}
 )
 
-
-file(GLOB CV_EXAMPLES src/*.cpp)
-foreach (SOURCE_FILE ${CV_EXAMPLES})
-    string(REPLACE ".cpp" "" filename ${SOURCE_FILE})
-    string(REPLACE "$ENV{HOME}/catkin_ws/src/myrobot/myrobot_vision/src/" "" filename ${filename})
-    add_executable(${filename} ${SOURCE_FILE})
-    target_link_libraries( ${filename} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-endforeach (SOURCE_FILE ${CV_EXAMPLES})
-
+add_subdirectory(src/opencv_examples)
 add_subdirectory(src/approach_bin)
 add_subdirectory(src/opencv_road)
+add_subdirectory(src/qr_barcode)
 
