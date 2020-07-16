@@ -16,7 +16,7 @@ public:
     float slope;
     float length;
 
-    MyLine(cv::Point2f _start, cv::Point2f _end);
+    MyLine(const cv::Point2f& _start, const cv::Point2f& _end);
     bool operator<(const MyLine &other) const;
 
     static bool areLinesEqual(const MyLine &thisLine, const MyLine &otherLine);

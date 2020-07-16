@@ -29,4 +29,5 @@ add_subdirectory(src/opencv_examples)
 add_subdirectory(src/approach_bin)
 add_subdirectory(src/opencv_road)
 add_subdirectory(src/qr_barcode)
+add_subdirectory(src/power_station)
 
