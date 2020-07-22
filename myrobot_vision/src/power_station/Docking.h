@@ -11,7 +11,9 @@
 #include <opencv2/core/types.hpp>
 #include <opencv2/core/mat.hpp>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Twist.h>
 #include "PointMeasure.h"
+#include "Line.h"
 
 typedef struct {
     std::string type;
@@ -19,12 +21,11 @@ typedef struct {
     std::vector<cv::Point> location;
 } decodedObject;
 
-
 struct AmclGoal {
-    double x = -3.3835508046;
-    double y = 2.53611148099;
-    double z = -0.71497274482; // orientation
-    double w = 0.699152325434;
+    double x = -3.32913665192;
+    double y = 2.97783347511;
+    double z = -0.711961822796; // orientation
+    double w = 0.702218173277;
 
     double distanceToQR = 0.15; //m
     std::string qrData = "Power Station";
@@ -34,7 +35,10 @@ struct AmclGoal {
 
 class Docking {
 public:
-    Docking() : imageTransport(this->nodeHandle) {};
+    Docking() : imageTransport{image_transport::ImageTransport(this->nodeHandle)},
+                goalReached{false},
+                correctZ{false},
+                correctX{false} {};
 
     void init();
 
@@ -48,8 +52,9 @@ public:
 
     void moveQR(const ros::TimerEvent &event);
 
-    void correctAngular(const cv::Point &center);
+    void correctAngular(const float &dist, const cv::Point &center, const float &verticalDiff);
 
+    void correctLinear(const float &dist, const cv::Point &center);
 
 private:
     ros::NodeHandle nodeHandle;
@@ -71,6 +76,9 @@ private:
 
     PointMeasure pointMeasure;
     AmclGoal powerGoal;
+
+    bool goalReached, correctZ, correctX;
+    std::vector<Line> verticalLines;
 };
 
 

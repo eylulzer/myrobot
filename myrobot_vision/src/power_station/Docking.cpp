@@ -100,7 +100,7 @@ void Docking::decode(const ros::TimerEvent &event) {
 }
 
 void Docking::moveQR(const ros::TimerEvent &event) {
-    if (this->rgbImage.empty())
+    if (this->rgbImage.empty() || goalReached)
         return;
 
     cv::Mat im = this->rgbImage.clone();
@@ -113,7 +113,7 @@ void Docking::moveQR(const ros::TimerEvent &event) {
             continue;
 
         std::vector<cv::Point> quad = decodedObject.location;
-        std::vector<Line> quadLines, verticalLines;
+        std::vector<Line> quadLines;
 
         int n = quad.size();
 
@@ -155,37 +155,12 @@ void Docking::moveQR(const ros::TimerEvent &event) {
             float dist = this->pointMeasure.getDepthFromPoint(center, this->depthImage);
             std::cout << "Distance to QR CODE: " << dist << std::endl;
 
-            geometry_msgs::Twist cmd;
-            if (dist > this->powerGoal.distanceToQR + 0.1) {
+            float verticalDiff = verticalLines[0].length - verticalLines[1].length;
 
-                // turn based on error and tolerance on angular precision
-                float err = (this->pointMeasure.camera.center.x - center.x) / 1000.0;
-
-                if (std::fabs(err) > 0.02) {
-                    cmd.angular.z = err;
-                    std::cout << "ERROR: " << err << std::endl;
-
-                }
-            }
-
-            if (dist > this->powerGoal.distanceToQR + 0.2) { //35cm
-
-                cmd.linear.x = -0.2;
-            } else if (dist > this->powerGoal.distanceToQR){
-
-                cmd.linear.x = -0.1;
-            } else if (dist < this->powerGoal.distanceToQR - 0.05) { //10cm
-
-
-                cmd.linear.x = 0.1;
-            }
-
-            this->cmdPub.publish(cmd);
-
-            if (dist < this->powerGoal.distanceToQR + 0.1 && dist < this->powerGoal.distanceToQR)
-                if (std::abs(verticalLines[0].length - verticalLines[1].length) > this->powerGoal.qrVerticalTolerance)
-                    std::cout << "failed " << std::endl;
-
+            if (std::fabs(verticalDiff) > this->powerGoal.qrVerticalTolerance)
+                this->correctAngular(dist, center, verticalDiff);
+            else
+                this->correctLinear(dist, center);
         }
 
     }
@@ -193,5 +168,52 @@ void Docking::moveQR(const ros::TimerEvent &event) {
     // Display results
     cv::imshow(this->windowName, im);
     cv::waitKey(3);
+
+}
+
+void Docking::correctAngular(const float &dist, const cv::Point &center, const float &verticalDiff) {
+    geometry_msgs::Twist cmd;
+
+    // turn 90 degrees to the right until x becomes the same with powerGoal
+    std::cout << this->powerGoal.x << " : " << this->powerGoal.y << std::endl;
+    std::cout << this->robotPosition->pose.pose.position.x << " : " << this->robotPosition->pose.pose.position.y
+              << std::endl << std::endl;
+
+    this->verticalLines.clear();
+}
+
+void Docking::correctLinear(const float &dist, const cv::Point &center) {
+    geometry_msgs::Twist cmd;
+    if (dist > this->powerGoal.distanceToQR + 0.1) {
+
+        // turn based on error and tolerance on angular precision
+        float err = float(this->pointMeasure.camera.center.x - center.x) / 1000.0;
+
+        if (std::fabs(err) > 0.02) {
+            cmd.angular.z = err;
+            std::cout << "ERROR: " << err << std::endl;
+
+        }
+    }
+
+    if (dist > this->powerGoal.distanceToQR + 0.2) //35cm
+        cmd.linear.x = -0.2;
+    else if (dist > this->powerGoal.distanceToQR)
+        cmd.linear.x = -0.1;
+    else if (dist < this->powerGoal.distanceToQR - 0.05) //10cm
+        cmd.linear.x = 0.1;
+
+
+    this->cmdPub.publish(cmd);
+
+    if (cmd.angular.z == 0 &&
+        cmd.linear.x == 0 &&
+        std::fabs(this->verticalLines[0].length - this->verticalLines[1].length) <
+        this->powerGoal.qrVerticalTolerance) {
+        std::cout << "goal reached";
+        goalReached = true;
+    } else {
+        this->verticalLines.clear();
+    }
 
 }
