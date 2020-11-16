@@ -38,7 +38,6 @@
         </inertial>
     </xacro:macro>
 
-
     <link name="base_link">
         <xacro:box_inertia m="1" w="${base_len}" h="${base_width}" d="${base_height}"/>
         <visual>
@@ -74,5 +73,51 @@
 
     <xacro:include filename="$(find myrobot_description)/urdf/camera.urdf.xacro"/>
     <xacro:camera_link/>
+
+    <link name="elevator">
+    <inertial>
+        <origin rpy="0 0 0" xyz="-2.7755575615628914e-15 -0.0022800822836666623 0.09050102854580892"/>
+        <mass value="8.994467062407036"/>
+        <inertia ixx="0.120393" ixy="-0.0" ixz="-0.0" iyy="0.325419" iyz="0.000697" izz="0.415842"/>
+    </inertial>
+    <visual>
+        <origin rpy="0 0 0" xyz="-0.5 -0.305 -0.075"/>
+        <geometry>
+        <mesh filename="package://myrobot_description/meshes/elevator_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin rpy="0 0 0" xyz="-0.5 -0.305 -0.075"/>
+        <geometry>
+        <mesh filename="package://myrobot_description/meshes/elevator_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+    </collision>
+    </link>
+
+    <joint name="slider" type="prismatic">
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.025"/>
+    <parent link="base_link"/>
+    <child link="elevator"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit effort="100" lower="0.0" upper="0.1" velocity="100"/>
+    </joint>
+
+	<!-- Transmission is important to link the joints and the controller (see rb1_control/config/rb1_control.yaml)-->
+		<transmission name="elevator_platform_trans">
+			<type>transmission_interface/SimpleTransmission</type>
+			<joint name="slider">
+				<!-- for the gazebo plugin -->
+				<!--hardwareInterface>EffortJointInterface</hardwareInterface-->
+				<!-- for ros control controller -->
+				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			</joint>            
+			<actuator name="elevator_platform_joint_motor">    
+				<hardwareInterface>EffortJointInterface</hardwareInterface>    
+				<mechanicalReduction>1</mechanicalReduction>
+			</actuator>
+		</transmission>
+
+
 
 </robot>

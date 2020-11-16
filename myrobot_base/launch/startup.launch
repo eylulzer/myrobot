@@ -9,6 +9,12 @@
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
           output="screen" ns="/" args="joint_state_controller mobile_base_controller" required="true"/>
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/" args="joint_state_controller mobile_base_controller" required="true"/>
+
+    <node name="elevator_controller_spawner" pkg="controller_manager" type="spawner" 
+          respawn="false" output="screen" ns="/" args="joint_state_controller elevator_controller" required="true"/>
 
 </launch>
 

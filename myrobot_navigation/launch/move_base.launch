@@ -13,6 +13,6 @@
 
         <remap from="cmd_vel" to="mobile_base_controller/cmd_vel"/>
         <remap from="odom" to="mobile_base_controller/odom"/>
-
+        <remap from="elevator" to="elevator_controller/lift"/>
     </node>
 </launch>
