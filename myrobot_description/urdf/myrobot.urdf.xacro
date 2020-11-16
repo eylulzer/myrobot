@@ -95,25 +95,25 @@
     </collision>
     </link>
 
-    <joint name="slider" type="prismatic">
+    <joint name="elevator_joint" type="prismatic">
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.025"/>
     <parent link="base_link"/>
     <child link="elevator"/>
     <axis xyz="0.0 0.0 1.0"/>
-    <limit effort="100" lower="0.0" upper="0.1" velocity="100"/>
+    <limit effort="100" lower="0.0" upper="0.1" velocity="0.5"/>
     </joint>
 
 	<!-- Transmission is important to link the joints and the controller (see rb1_control/config/rb1_control.yaml)-->
 		<transmission name="elevator_platform_trans">
 			<type>transmission_interface/SimpleTransmission</type>
-			<joint name="slider">
+			<joint name="elevator_joint">
 				<!-- for the gazebo plugin -->
 				<!--hardwareInterface>EffortJointInterface</hardwareInterface-->
 				<!-- for ros control controller -->
-				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
 			</joint>            
 			<actuator name="elevator_platform_joint_motor">    
-				<hardwareInterface>EffortJointInterface</hardwareInterface>    
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>    
 				<mechanicalReduction>1</mechanicalReduction>
 			</actuator>
 		</transmission>
